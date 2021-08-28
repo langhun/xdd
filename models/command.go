@@ -6,7 +6,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
+	"github.com/beego/beego/v2/client/httplib"
+	"github.com/beego/beego/v2/server/web"
 	"gorm.io/gorm"
 )
 
@@ -198,7 +199,7 @@ var codeSignals = []CodeSignal{
 	},
 	{
 		Command: []string{"get-ua", "ua"},
-		//Admin:   true,
+		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			if !sender.IsAdmin {
 				coin := GetCoin(sender.UserID)
@@ -236,7 +237,7 @@ var codeSignals = []CodeSignal{
 	},
 	{
 		Command: []string{"查询", "query"},
-		//Admin:   true,
+		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			sender.handleJdCookies(func(ck *JdCookie) {
 				sender.Reply(ck.Query())
@@ -457,7 +458,7 @@ var codeSignals = []CodeSignal{
 	},
 	{
 		Command: []string{"get-env", "env", "e"},
-		//Admin:   true,
+		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			ct := sender.JoinContens()
 			if ct == "" {
