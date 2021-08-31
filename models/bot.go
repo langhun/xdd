@@ -84,6 +84,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	}
 	switch msg {
 	default:
+		{
+			if strings.Contains(msg, "wskey=") {
+			 cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
+			 return nil
+			}
+		}
+		
 		{ //tyt
 			ss := regexp.MustCompile(`packetId=(\S+)(&|&amp;)currentActId`).FindStringSubmatch(msg)
 			if len(ss) > 0 {
