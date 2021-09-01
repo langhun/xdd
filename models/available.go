@@ -167,7 +167,7 @@ func CookieOK(ck *JdCookie) bool {
 				ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
 				JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
 				var pinwskey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-				ck.Push(fmt.Sprintf(pinwskey))
+				//ck.Push(fmt.Sprintf(pinwskey))
 				msg1 := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, pinwskey), &Sender{})
 				ck.Push(fmt.Sprintf("自动转换wskey---%s", msg1))
 				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(msg1, -1)
