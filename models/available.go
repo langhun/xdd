@@ -170,8 +170,7 @@ func CookieOK(ck *JdCookie) bool {
 				ck.Push(fmt.Sprintf(pinwskey))
 				msg1 := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, pinwskey), &Sender{})
 				ck.Push(fmt.Sprintf("自动转换wskey---%s", msg1))
-				fmt.Sprintf("自动转换wskey---%s", pinwskey)
-				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(pinwskey, -1)
+				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(msg1, -1)
 				if len(ss) > 0 {
 					for _, s := range ss {
 						ck := JdCookie{
