@@ -103,7 +103,6 @@ type JdCookie struct {
 
 type JdCookiePool struct {
 	ID       int    `gorm:"column:ID;primaryKey"`
-	WsKey    string `gorm:"column:WsKey"`
 	PtKey    string `gorm:"column:PtKey;unique"`
 	PtPin    string `gorm:"column:PtPin"`
 	LoseAt   string `gorm:"column:LoseAt"`
@@ -118,7 +117,7 @@ var CreateAt = "CreateAt"
 var Note = "Note"
 var Available = "Available"
 var UnAvailable = "UnAvailable"
-var PtKey = "WsKey"
+var WsKey = "WsKey"
 var PtKey = "PtKey"
 var PtPin = "PtPin"
 var Priority = "Priority"
