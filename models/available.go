@@ -158,39 +158,6 @@ func CookieOK(ck *JdCookie) bool {
 	if nil != json.Unmarshal(data, ui) {
 		return true
 	}
-	var handleMessage = func(msgs ...interface{}) interface{} {
-		msg := msgs[0].(string)
-		args := strings.Split(msg, " ")
-		head := args[0]
-		contents := args[1:]
-		sender := &Sender{
-			UserID:   msgs[2].(int),
-			Type:     msgs[1].(string),
-			Contents: contents,
-		}
-		if len(msgs) >= 4 {
-			sender.ChatID = msgs[3].(int)
-		}
-		if sender.Type == "tgg" {
-			sender.MessageID = msgs[4].(int)
-			sender.Username = msgs[5].(string)
-			sender.ReplySenderUserID = msgs[6].(int)
-		}
-		if sender.UserID == Config.TelegramUserID || sender.UserID == int(Config.QQID) {
-			sender.IsAdmin = true
-		}
-		for i := range codeSignals {
-			for j := range codeSignals[i].Command {
-				if codeSignals[i].Command[j] == head {
-					return func() interface{} {
-						if codeSignals[i].Admin && !sender.IsAdmin {
-							return "你没有权限操作"
-						}
-						return codeSignals[i].Handle(sender)
-					}()
-				}
-			}
-		}
 	switch ui.Retcode {
 	case "1001": //ck.BeanNum
 		if ui.Msg == "not login" {
@@ -198,8 +165,9 @@ func CookieOK(ck *JdCookie) bool {
 				ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
 				JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
 				wskey := ck.WsKey
-				msg1 := cmd(fmt.Sprintf(`wskey python3 wspt.py`, wskey), sender)
-				fmt.Sprintf(msg1)
+				Handle: func(sender *Sender) interface{} {
+					msg1 := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, wskey), sender)
+					sender.Reply(fmt.Sprintf(msg1))
 			}
 
 			return false
