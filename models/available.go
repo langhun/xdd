@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
-
+	"regexp"
 	"github.com/beego/beego/v2/client/httplib"
 )
 
@@ -164,12 +164,32 @@ func CookieOK(ck *JdCookie) bool {
 			if ck.Available == True {
 				ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
 				JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-				type Stringer interface{ String() string }
 				var pinwskey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-				ck.Push(fmt.Sprintf(pinwskey))
-				msg1 := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, pinwskey), &Sender{})
-				ck.Push(fmt.Sprintf("自动转换wskey---%s", msg1))
+				//ck.Push(fmt.Sprintf(pinwskey))
+				//msg1 := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, pinwskey), &Sender{})
+				//ck.Push(fmt.Sprintf("自动转换wskey---%s", msg1))
+				cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, pinwskey), &Sender{})
+				fmt.Sprintf("自动转换wskey---%s", pinwskey)
+				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(pinwskey, -1)
+				if len(ss) > 0 {
+
+					xyb := 0
+					for _, s := range ss {
+						ck := JdCookie{
+							PtKey: s[1],
+							PtPin: s[2],
+						}
+						if nck, err := GetJdCookie(ck.PtPin); err == nil {
+							nck.InPool(ck.PtKey)
+							msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+							(&JdCookie{}).Push(msg)
+							logs.Info(msg)
+						} else {
+							if Cdle {
+								ck.Hack = True
+							}
 			}
+		}
 
 			return false
 		}
