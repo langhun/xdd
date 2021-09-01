@@ -168,7 +168,7 @@ func CookieOK(ck *JdCookie) bool {
 				var pinwskey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 				ck.Push(fmt.Sprintf(pinwskey))
 				msg1 := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, pinwskey), &Sender{})
-				fmt.Sprintf("测试1，%s", msg1)
+				ck.Push(fmt.Sprintf("ptkey查看-%s", msg1))
 			}
 
 			return false
