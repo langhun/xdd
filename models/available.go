@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"strings"
 	"regexp"
+	"strings"
+
 	"github.com/beego/beego/v2/client/httplib"
+	"github.com/beego/beego/v2/core/logs"
 )
 
 type UserInfoResult struct {
@@ -172,8 +174,6 @@ func CookieOK(ck *JdCookie) bool {
 				fmt.Sprintf("自动转换wskey---%s", pinwskey)
 				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(pinwskey, -1)
 				if len(ss) > 0 {
-
-					xyb := 0
 					for _, s := range ss {
 						ck := JdCookie{
 							PtKey: s[1],
@@ -188,10 +188,12 @@ func CookieOK(ck *JdCookie) bool {
 							if Cdle {
 								ck.Hack = True
 							}
-			}
-		}
+						}
+					}
 
-			return false
+					return false
+				}
+			}
 		}
 	case "0":
 		if url.QueryEscape(ui.Data.UserInfo.BaseInfo.CurPin) != ck.PtPin {
