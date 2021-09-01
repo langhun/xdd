@@ -164,8 +164,8 @@ func CookieOK(ck *JdCookie) bool {
 			if ck.Available == True {
 				ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
 				JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-				var pin = "pin="
-				var wskey = "wskey="
+				var pin = "pin=%s"
+				var wskey = "wskey=%s"
 				var pinwskey = fmt.Sprintf(pin, ck.PtPin, wskey, ck.WsKey)
 				ck.Push(fmt.Sprintf(pinwskey))
 				msg1 := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, pinwskey), &Sender{})
