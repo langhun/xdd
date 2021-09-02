@@ -410,7 +410,7 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 			}
 		}
 	}
-	return []byte{}, nil
+	//return []byte{}, nil
 }
 
 func GetQlVersion(address string) (string, error) {
