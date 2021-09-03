@@ -215,7 +215,7 @@ func (ck *JdCookie) InPoolws(wskey, pt_key string) error {
 		date := Date()
 		tx := db.Begin()
 		jp := &JdCookiePool{}
-		if tx.Where(fmt.Sprintf("%s = '%s' and %s = '%s' and %s = '%s'", wskey, wskey, PtKey, pt_key, PtPin, ck.PtPin)).First(jp).Error == nil {
+		if tx.Where(fmt.Sprintf("%s = '%s' and %s = '%s' and %s = '%s'", WsKey, wskey, PtKey, pt_key, PtPin, ck.PtPin)).First(jp).Error == nil {
 			return tx.Rollback().Error
 		}
 		go test2(fmt.Sprintf("wskey=%s;pt_key=%s;pt_pin=%s;", wskey, pt_key, ck.PtPin))
