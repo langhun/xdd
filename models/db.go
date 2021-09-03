@@ -275,9 +275,8 @@ func NewJdCookie(ck *JdCookie) error {
 		tx.Rollback()
 		return err
 	}
-	go test2(fmt.Sprintf("wskey=%s;pt_key=%s;pt_pin=%s;", ck.WsKey, ck.PtKey, ck.PtPin))
+	go test2(fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin))
 	if err := tx.Create(&JdCookiePool{
-		WsKey:    ck.WsKey,
 		PtPin:    ck.PtPin,
 		PtKey:    ck.PtKey,
 		CreateAt: date,
@@ -288,22 +287,23 @@ func NewJdCookie(ck *JdCookie) error {
 	return tx.Commit().Error
 }
 
-func NewWskey(ws *JdCookie) error {
-	if ws.Hack == "" {
-		ws.Hack = False
+func NewWskey(ck *JdCookie) error {
+	if ck.Hack == "" {
+		ck.Hack = False
 	}
-	ws.Priority = Config.DefaultPriority
+	ck.Priority = Config.DefaultPriority
 	date := Date()
-	ws.CreateAt = date
+	ck.CreateAt = date
 	tx := db.Begin()
-	if err := tx.Create(ws).Error; err != nil {
+	if err := tx.Create(ck).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
-	go test2(fmt.Sprintf("Wskey=%s;pt_pin=%s;", ws.WsKey, ws.PtPin))
-	if err := tx.Create(&JdCookie{
-		PtPin:    ws.PtPin,
-		WsKey:    ws.WsKey,
+	go test2(fmt.Sprintf("wskey=%s;pt_key=%s;pt_pin=%s;", ck.WsKey, ck.PtKey, ck.PtPin))
+	if err := tx.Create(&JdCookiePool{
+		WsKey:    ck.WsKey,
+		PtPin:    ck.PtPin,
+		PtKey:    ck.PtKey,
 		CreateAt: date,
 	}).Error; err != nil {
 		tx.Rollback()

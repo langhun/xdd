@@ -184,7 +184,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									if Cdle {
 										ck.Hack = True
 									}
-									NewJdCookie(&ck)
+									NewWskey(&ck)
 									msg1 := fmt.Sprintf("添加wskey，%s", ck.WsKey)
 									msg := fmt.Sprintf("添加账号，%s", ck.PtPin)
 									sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
