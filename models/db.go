@@ -260,22 +260,22 @@ func NewJdCookie(ck *JdCookie) error {
 	return tx.Commit().Error
 }
 
-func NewWskey(ck *JdCookie) error {
-	if ck.Hack == "" {
-		ck.Hack = False
+func NewWskey(ws *JdCookie) error {
+	if ws.Hack == "" {
+		ws.Hack = False
 	}
-	ck.Priority = Config.DefaultPriority
+	ws.Priority = Config.DefaultPriority
 	date := Date()
-	ck.CreateAt = date
+	ws.CreateAt = date
 	tx := db.Begin()
-	if err := tx.Create(ck).Error; err != nil {
+	if err := tx.Create(ws).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
-	go test2(fmt.Sprintf("Wskey=%s;pt_pin=%s;", ck.WsKey, ck.PtPin))
+	go test2(fmt.Sprintf("Wskey=%s;pt_pin=%s;", ws.WsKey, ws.PtPin))
 	if err := tx.Create(&JdCookie{
-		PtPin:    ck.PtPin,
-		WsKey:    ck.WsKey,
+		PtPin:    ws.PtPin,
+		WsKey:    ws.WsKey,
 		CreateAt: date,
 	}).Error; err != nil {
 		tx.Rollback()
