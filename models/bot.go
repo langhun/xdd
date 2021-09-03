@@ -149,12 +149,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		{ //wskey
 			if strings.Contains(msg, "wskey=") {
-				//ws := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
+
 				wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
 				wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
-				//sender.Reply(fmt.Sprintf(wspt))
-				//ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
 				ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
+
 				if len(ss) > 0 {
 					xyb := 0
 					for _, s := range ss {
@@ -164,8 +163,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							PtKey: s[3],
 						}
 						sender.Reply(fmt.Sprintf(`pin--"%s"    wskey--"%s"     ptkey--"%s"`, ck.PtPin, ck.WsKey, ck.PtKey))
-						msg := fmt.Sprintf("ws-%s", ck.WsKey)
-						logs.Info(msg)
 						if CookieOK(&ck) {
 							xyb++
 							if sender.IsQQ() {

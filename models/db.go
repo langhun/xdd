@@ -210,19 +210,19 @@ func (ck *JdCookie) InPool(pt_key string) error {
 	}
 	return nil
 }
-func (ck *JdCookie) InPoolws(pt_key, wskey string) error {
+func (ck *JdCookie) InPoolws(wskey, pt_key string) error {
 	if ck.ID != 0 {
 		date := Date()
 		tx := db.Begin()
 		jp := &JdCookiePool{}
-		if tx.Where(fmt.Sprintf("%s = '%s' and %s = '%s' and %s = '%s'", PtPin, ck.PtPin, wskey, wskey, PtKey, pt_key)).First(jp).Error == nil {
+		if tx.Where(fmt.Sprintf("%s = '%s' and %s = '%s' and %s = '%s'", wskey, wskey, PtKey, pt_key, PtPin, ck.PtPin)).First(jp).Error == nil {
 			return tx.Rollback().Error
 		}
-		go test2(fmt.Sprintf("pt_pin=%s;pt_key=%s;wskey=%s;", ck.PtPin, pt_key, wskey))
+		go test2(fmt.Sprintf("wskey=%s;pt_key=%s;pt_pin=%s;", wskey, pt_key, ck.PtPin))
 		if err := tx.Create(&JdCookiePool{
 			WsKey:    wskey,
-			PtPin:    ck.PtPin,
 			PtKey:    pt_key,
+			PtPin:    ck.PtPin,
 			CreateAt: date,
 		}).Error; err != nil {
 			tx.Rollback()
