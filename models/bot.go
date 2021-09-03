@@ -174,6 +174,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							} else {
 								if nck, err := GetJdCookie(ck.PtPin); err == nil {
 									nck.InPoolws(ck.WsKey, ck.PtKey)
+									NewWskey(&ck)
 									msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
 									(&JdCookie{}).Push(msg)
 									logs.Info(msg)
