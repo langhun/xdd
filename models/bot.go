@@ -176,6 +176,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								} else {
 									if nck, err := GetJdCookie(ck.PtPin); err == nil {
 										nck.InPool(ck.PtKey)
+										NewWskey(&ws)
 										msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
 										(&JdCookie{}).Push(msg)
 										logs.Info(msg)
@@ -188,7 +189,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 										msg1 := fmt.Sprintf("添加wskey，%s", ck.WsKey)
 										msg := fmt.Sprintf("添加账号，%s", ck.PtPin)
 										sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
-										logs.Info(msg, msg1)
+										logs.Info(msg)
+										logs.Info(msg1)
 									}
 								}
 							} else {
