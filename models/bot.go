@@ -154,7 +154,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
 				//sender.Reply(fmt.Sprintf(wspt))
 				//ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
-				ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wstopt, -1)
+				ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
 				if len(ss) > 0 {
 					xyb := 0
 					for _, s := range ss {
