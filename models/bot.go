@@ -173,8 +173,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								sender.Reply(fmt.Sprintf("重复提交"))
 							} else {
 								if nck, err := GetJdCookie(ck.PtPin); err == nil {
-									nck.InPoolws(ck.WsKey, ck.PtKey)
-									nck.addwskey(ck.WsKey, ck.PtKey)
+									//nck.InPoolws(ck.WsKey, ck.PtKey)
+									//nck.addwskey(ck.WsKey, ck.PtKey)
+									NewWskey(&ck)
 									msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
 									(&JdCookie{}).Push(msg)
 									logs.Info(msg)
