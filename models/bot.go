@@ -84,61 +84,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	}
 	switch msg {
 	default:
-
-		{ //
-			ss := regexp.MustCompile(`pin==([^;=\s]+);wskey==([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
-
-			if len(ss) > 0 {
-
-				xyb := 0
-				for _, s := range ss {
-					ck := JdCookie{
-						WsKey: s[2],
-						PtPin: s[1],
-					}
-					if CookieOK(&ck) {
-						xyb++
-						if sender.IsQQ() {
-							ck.QQ = sender.UserID
-						} else if sender.IsTG() {
-							//ck.Telegram = sender.UserID
-						}
-						if HasKey(ck.WsKey) {
-							sender.Reply(fmt.Sprintf("已经添加过~"))
-						} else {
-							if nck, err := GetJdCookie(ck.PtPin); err == nil {
-								msg1 := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
-								ss1 := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(msg1, -1)
-								for _, s := range ss1 {
-									ck := JdCookie{
-										PtKey: s[1],
-										PtPin: s[2],
-									}
-									nck.InPool(ck.PtKey)
-									msg := fmt.Sprintf("更新CK~%s", ck.PtPin)
-									(&JdCookie{}).Push(msg)
-									logs.Info(msg)
-								}
-							} else {
-								if Cdle {
-									ck.Hack = True
-								}
-								NewWskey(&ck)
-								msg := fmt.Sprintf("wskey添加成功，%s", ck.PtPin)
-								sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
-								logs.Info(msg)
-							}
-						}
-					} else {
-						sender.Reply(fmt.Sprintf("无效，许愿币-1，余额%d", RemCoin(sender.UserID, 1)))
-					}
-				}
-				go func() {
-					Save <- &JdCookie{}
-				}()
-				return nil
-			}
-		}
 		{ //tyt
 			ss := regexp.MustCompile(`packetId=(\S+)(&|&amp;)currentActId`).FindStringSubmatch(msg)
 			if len(ss) > 0 {
@@ -156,7 +101,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return nil
 			}
 		}
-		{ //
+		{ //ptkey
 			ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 
 			if len(ss) > 0 {
@@ -194,6 +139,60 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						}
 					} else {
 						sender.Reply(fmt.Sprintf("无效，许愿币-1，余额%d", RemCoin(sender.UserID, 1)))
+					}
+				}
+				go func() {
+					Save <- &JdCookie{}
+				}()
+				return nil
+			}
+		}
+		{ //wskey
+			ws := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
+			wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, ws), sender)
+			ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wstopt, -1)
+			if len(ss) > 0 {
+				xyb := 0
+				for _, s := range ws {
+					ws := JdCookie{
+						WsKey: s[2],
+						PtPin: s[1],
+					}
+					for _, s := range ss {
+						ck := JdCookie{
+							PtKey: s[1],
+							PtPin: s[2],
+						}
+						if CookieOK(&ck) {
+							xyb++
+							if sender.IsQQ() {
+								ck.QQ = sender.UserID
+							} else if sender.IsTG() {
+								ck.Telegram = sender.UserID
+							}
+							if HasKey(ck.PtKey) {
+								sender.Reply(fmt.Sprintf("重复提交"))
+							} else {
+								if nck, err := GetJdCookie(ck.PtPin); err == nil {
+									nck.InPool(ck.PtKey)
+									msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+									(&JdCookie{}).Push(msg)
+									logs.Info(msg)
+								} else {
+									if Cdle {
+										ck.Hack = True
+									}
+									NewWskey(&ws)
+									NewJdCookie(&ck)
+									msg1 := fmt.Sprintf("添加wskey，%s", ck.WsKey)
+									msg := fmt.Sprintf("添加账号，%s", ck.PtPin)
+									sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
+									logs.Info(msg, msg1)
+								}
+							}
+						} else {
+							sender.Reply(fmt.Sprintf("无效，许愿币-1，余额%d", RemCoin(sender.UserID, 1)))
+						}
 					}
 				}
 				go func() {
