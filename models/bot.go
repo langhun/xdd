@@ -163,7 +163,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							PtKey: s[3],
 							PtPin: s[4],
 						}
-						sender.Reply(fmt.Sprintf(`ws-"%s" pt-"%s" pin-"%s"`, ck.WsKey, ck.PtKey, ck.PtPin))
+						sender.Reply(fmt.Sprintf(`ws-"%s\n" pt-"%s\n" pin-"%s\n"`, ck.WsKey, ck.PtKey, ck.PtPin))
 						msg := fmt.Sprintf("ws-%s", ck.WsKey)
 						logs.Info(msg)
 						if CookieOK(&ck) {
@@ -186,11 +186,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 										ck.Hack = True
 									}
 									NewWskey(&ck)
-									msg1 := fmt.Sprintf("添加wskey，%s", ck.WsKey)
 									msg := fmt.Sprintf("添加账号，%s", ck.PtPin)
+									sender.Reply(fmt.Sprintf("wskey添加成功，%s", ck.WsKey))
 									sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
 									logs.Info(msg)
-									logs.Info(msg1)
 								}
 							}
 						} else {
