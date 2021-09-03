@@ -152,7 +152,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				ws := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 				wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
 
-				wspt := fmt.Sprintf(`wskey="%s" ptkey="%s"`, ws, wstopt)
+				wspt := fmt.Sprintf(`"%s" "%s"`, ws, wstopt)
 				sender.Reply(fmt.Sprintf(wspt))
 
 				ss := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
