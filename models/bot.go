@@ -163,7 +163,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							WsKey: s[2],
 							PtKey: s[3],
 						}
-						sender.Reply(fmt.Sprintf(`pin-"%s"    ws-"%s"     pt-"%s"`, ck.PtPin, ck.WsKey, ck.PtKey))
+						sender.Reply(fmt.Sprintf(`pin--"%s"    wskey--"%s"     ptkey--"%s"`, ck.PtPin, ck.WsKey, ck.PtKey))
 						msg := fmt.Sprintf("ws-%s", ck.WsKey)
 						logs.Info(msg)
 						if CookieOK(&ck) {
