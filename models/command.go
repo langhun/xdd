@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/server/web"
 	"gorm.io/gorm"
@@ -93,6 +94,43 @@ func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 	return nil
 }
 
+func (sender *Sender) handLeUpdateCookie() error {
+	cks := GetJdCookies()
+	a := sender.JoinContens()
+	if !sender.IsAdmin {
+		sender.Reply("你没有权限操作")
+	}else if a == "" {
+		sender. RepLy("参数错误")
+	} else {
+		cks = LimitJdCookie(cks, a)
+		if Len(cks)==0
+			sender.Reply("没有匹配的账号")
+			return errors.New("没有匹配的账号")
+		} else {
+			for i := range ckS {
+				eachCk := cks[i]
+				if eachCk. WsKey = "" {
+					sender.Reply(fmt.Sprintf("更新失败,账号:%s,未提交 wskey", eachck.PtPin))
+				} else {
+					res := simpLeCmd(fmt.Sprintf(wskey="pin=%s: wskey=%s:" python wspt.py, eachck.Ptpin, eachCk.WsKey))
+					ss := regexp MustCompile(pt_key=([^;=\s]+);.*?pt_pin=([^;=\s]+):).FindstringSubmatch(res)
+					if ss != nil {
+						tmpCk := JdCookie{PtKey: ss, PtPin: eachck.Ptpin}
+						if CookieOk(&tmpCk){
+							newCK, _ := GetJdcookie(eachCk.PtPin)
+							newCK.InPool(tmpCk.PtKey)
+							sender. RepLy(fmt.sprintf("更新账号,%s,%s", eachck.PePin, tmpCk.PuKey))
+						} else {
+							sender.Repy(fmt.Sprintf("更新失败,账号:%s,获取到的ck无效", eachCk.PePin)
+					} else {
+					sender.Repy(fmt.Sprintf("更新失败,账号:%5,未获取到 pt_key,执行结果为:%s", eachck.PaPin,res))
+					}
+				}	
+			}
+		}	
+	}
+	return nil
+}
 var codeSignals = []CodeSignal{
 	{
 		Command: []string{"status", "状态"},
@@ -164,15 +202,15 @@ var codeSignals = []CodeSignal{
 	{
 		Command: []string{"qrcode", "扫码", "二维码", "scan"},
 		Handle: func(sender *Sender) interface{} {
-			 url := fmt.Sprintf("http://127.0.0.1:%d/api/login/qrcode.png?tp=%s&uid=%d&gid=%d", web.BConfig.Listen.HTTPPort, sender.Type, sender.UserID, sender.ChatID)
-			 if sender.Type == "tgg" {
-			 	url += fmt.Sprintf("&mid=%v&unm=%v", sender.MessageID, sender.Username)
-			 }
-			 rsp, err := httplib.Get(url).Response()
-			 if err != nil {
-			 	return nil
-			 }
-			 return rsp
+			url := fmt.Sprintf("http://127.0.0.1:%d/api/login/qrcode.png?tp=%s&uid=%d&gid=%d", web.BConfig.Listen.HTTPPort, sender.Type, sender.UserID, sender.ChatID)
+			if sender.Type == "tgg" {
+				url += fmt.Sprintf("&mid=%v&unm=%v", sender.MessageID, sender.Username)
+			}
+			rsp, err := httplib.Get(url).Response()
+			if err != nil {
+				return nil
+			}
+			return rsp
 			//return "小滴滴和京东没有任何关系，请使用ninja。"
 		},
 	},
@@ -241,6 +279,15 @@ var codeSignals = []CodeSignal{
 		Handle: func(sender *Sender) interface{} {
 			sender.handleJdCookies(func(ck *JdCookie) {
 				sender.Reply(ck.Query())
+			})
+			return nil
+		},
+	},
+	{
+		Command: []string{"更新ck", "updateck"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			sender.handleUpdateCookie(func(ck *JdCookie) {
 			})
 			return nil
 		},

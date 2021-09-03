@@ -187,6 +187,7 @@ func CookieOK(ck *JdCookie) bool {
 								ck.Hack = True
 							}
 						}
+						return false
 					}
 
 					return false
