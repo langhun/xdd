@@ -159,11 +159,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					xyb := 0
 					for _, s := range ss {
 						ck := JdCookie{
+							PtPin: s[1],
 							WsKey: s[2],
 							PtKey: s[3],
-							PtPin: s[4],
 						}
-						sender.Reply(fmt.Sprintf(`ws-"%s\n" pt-"%s\n" pin-"%s\n"`, ck.WsKey, ck.PtKey, ck.PtPin))
+						sender.Reply(fmt.Sprintf(`pin-"%s"    ws-"%s"     pt-"%s"`, ck.PtPin, ck.WsKey, ck.PtKey))
 						msg := fmt.Sprintf("ws-%s", ck.WsKey)
 						logs.Info(msg)
 						if CookieOK(&ck) {
