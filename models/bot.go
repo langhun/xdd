@@ -153,17 +153,17 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
 				wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
 				//sender.Reply(fmt.Sprintf(wspt))
-				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
-				//ss := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wstopt, -1)
+				//ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
+				ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wstopt, -1)
 				if len(ss) > 0 {
 					xyb := 0
 					for _, s := range ss {
 						ck := JdCookie{
-							WsKey: s[1],
-							PtKey: s[2],
-							//PtPin: s[3],
+							WsKey: s[2],
+							PtKey: s[3],
+							PtPin: s[4],
 						}
-						//sender.Reply(fmt.Sprintf(`ws-"%s" pt-"%s" pin-"%s"`, ck.WsKey, ck.PtKey, ck.PtPin))
+						sender.Reply(fmt.Sprintf(`ws-"%s" pt-"%s" pin-"%s"`, ck.WsKey, ck.PtKey, ck.PtPin))
 						msg := fmt.Sprintf("ws-%s", ck.WsKey)
 						logs.Info(msg)
 						if CookieOK(&ck) {
