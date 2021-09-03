@@ -160,48 +160,41 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 				if len(ss) > 0 {
 					xyb := 0
-					for _, s := range ws {
-						ws := JdCookie{
-							WsKey: s[2],
-							PtPin: s[1],
+					for _, s := range ss {
+						ck := JdCookie{
+							WsKey: s[1],
+							PtKey: s[2],
+							PtPin: s[3],
 						}
-						for _, s := range ss {
-							ck := JdCookie{
-								PtKey: s[1],
-								PtPin: s[2],
+						if CookieOK(&ck) {
+							xyb++
+							if sender.IsQQ() {
+								ck.QQ = sender.UserID
+							} else if sender.IsTG() {
+								//ck.Telegram = sender.UserID
 							}
-							if CookieOK(&ck) {
-								xyb++
-								if sender.IsQQ() {
-									ck.QQ = sender.UserID
-								} else if sender.IsTG() {
-									//ck.Telegram = sender.UserID
-								}
-								if HasKey(ck.PtKey) {
-									sender.Reply(fmt.Sprintf("重复提交"))
-								} else {
-									if nck, err := GetJdCookie(ck.PtPin); err == nil {
-										nck.InPool(ck.PtKey)
-										NewWskey(&ws)
-										msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-										(&JdCookie{}).Push(msg)
-										logs.Info(msg)
-									} else {
-										if Cdle {
-											ck.Hack = True
-										}
-										NewWskey(&ws)
-										NewJdCookie(&ck)
-										msg1 := fmt.Sprintf("添加wskey，%s", ck.WsKey)
-										msg := fmt.Sprintf("添加账号，%s", ck.PtPin)
-										sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
-										logs.Info(msg)
-										logs.Info(msg1)
-									}
-								}
+							if HasKey(ck.PtKey) {
+								sender.Reply(fmt.Sprintf("重复提交"))
 							} else {
-								sender.Reply(fmt.Sprintf("无效，许愿币-1，余额%d", RemCoin(sender.UserID, 1)))
+								if nck, err := GetJdCookie(ck.PtPin); err == nil {
+									nck.InPoolws(ck.WsKey, ck.PtKey)
+									msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+									(&JdCookie{}).Push(msg)
+									logs.Info(msg)
+								} else {
+									if Cdle {
+										ck.Hack = True
+									}
+									NewJdCookie(&ck)
+									msg1 := fmt.Sprintf("添加wskey，%s", ck.WsKey)
+									msg := fmt.Sprintf("添加账号，%s", ck.PtPin)
+									sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
+									logs.Info(msg)
+									logs.Info(msg1)
+								}
 							}
+						} else {
+							sender.Reply(fmt.Sprintf("无效，许愿币-1，余额%d", RemCoin(sender.UserID, 1)))
 						}
 					}
 					go func() {
