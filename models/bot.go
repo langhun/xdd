@@ -107,9 +107,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							sender.Reply(fmt.Sprintf("已经添加过~"))
 						} else {
 							if nck, err := GetJdCookie(ck.PtPin); err == nil {
-								msg := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
-								ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
-								for _, s := range ss {
+								msg1 := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
+								ss1 := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(msg1, -1)
+								for _, s := range ss1 {
 									ck := JdCookie{
 										PtKey: s[1],
 										PtPin: s[2],
@@ -124,7 +124,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									ck.Hack = True
 								}
 								NewWskey(&ck)
-								msg := fmt.Sprintf("添加账号，%s", ck.PtPin)
+								msg := fmt.Sprintf("wskey添加成功，%s", ck.PtPin)
 								sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
 								logs.Info(msg)
 							}
