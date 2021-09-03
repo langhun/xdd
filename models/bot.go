@@ -156,7 +156,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				sender.Reply(fmt.Sprintf(wspt))
 
 				ss := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
-
 				if len(ss) > 0 {
 					xyb := 0
 					for _, s := range ss {
@@ -165,7 +164,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							PtKey: s[2],
 							PtPin: s[3],
 						}
-						sender.Reply(fmt.Sprintf(`"%s"`, ss))
+						sender.Reply(fmt.Sprintf(`ws-"%s" pt-"%s" pin-"%s"`, ck.WsKey, ck.PtKey, ck.PtPin))
 						if CookieOK(&ck) {
 							xyb++
 							if sender.IsQQ() {
