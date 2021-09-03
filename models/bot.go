@@ -152,10 +152,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				//ws := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 				wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
 
-				wspt := fmt.Sprintf(`"%s" "%s"`, msg, wstopt)
+				wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
 				sender.Reply(fmt.Sprintf(wspt))
 
-				ss := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
+				ss := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wstopt, -1)
 				if len(ss) > 0 {
 					xyb := 0
 					for _, s := range ss {
