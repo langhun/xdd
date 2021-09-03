@@ -285,15 +285,17 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
-	{
-		Command: []string{"更新ck", "updateck"},
-		Admin:   true,
-		Handle: func(sender *Sender) interface{} {
-			sender.handleUpdateCookie(func(ck *JdCookie) {
-			})
-			return nil
+	/*
+		{
+			Command: []string{"更新ck", "updateck"},
+			Admin:   true,
+			Handle: func(sender *Sender) interface{} {
+				sender.handleUpdateCookie(func(ck *JdCookie) {
+				})
+				return nil
+			},
 		},
-	},
+	*/
 	{
 		Command: []string{"发送", "通知", "notify", "send"},
 		Admin:   true,
