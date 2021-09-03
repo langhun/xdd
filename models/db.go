@@ -103,7 +103,7 @@ type JdCookie struct {
 
 type JdCookiePool struct {
 	ID       int    `gorm:"column:ID;primaryKey"`
-	WsKey    string `gorm:"column:PtPin"`
+	WsKey    string `gorm:"column:WsKey"`
 	PtKey    string `gorm:"column:PtKey;unique"`
 	PtPin    string `gorm:"column:PtPin"`
 	LoseAt   string `gorm:"column:LoseAt"`
