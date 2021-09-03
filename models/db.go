@@ -307,7 +307,7 @@ func (ck *JdCookie) addwskey(wskey, pt_key string) error {
 		}
 		tx.Model(ck).Updates(map[string]interface{}{
 			Available: True,
-			PtKey:     pt_key,
+			WsKey:     wskey,
 		})
 		return tx.Commit().Error
 	}
