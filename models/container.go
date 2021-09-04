@@ -113,7 +113,7 @@ func initContainer() {
 func (c *Container) write(cks []JdCookie) error {
 	switch c.Type {
 	case "ql":
-		if c.Version == "2.8" {
+		if c.Version == "2.8" || c.Version == "2.9" {
 			if len(c.Delete) > 0 {
 				c.request("/api/envs", DELETE, fmt.Sprintf(`[%s]`, strings.Join(c.Delete, ",")))
 			}
