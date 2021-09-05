@@ -59,3 +59,46 @@ func cmd(str string, sender *Sender) string {
 	err = cmd.Wait()
 	return msg
 }
+func simpleCmd(str string) string {
+	cmd := exec.Command("sh", "-c", str)
+	stdout, err := cmd.StdoutPipe()
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		logs.Warn("cmd.StdoutPipe: ", err)
+		return err.Error()
+	}
+	cmd.Dir = ExecPath + "/scripts/"
+	err = cmd.Start()
+	if err != nil {
+		logs.Warn("%v", err)
+		return err.Error()
+	}
+	go func() {
+		msg := ""
+		reader := bufio.NewReader(stderr)
+		for {
+			line, err2 := reader.ReadString('\n')
+			if err2 != nil || io.EOF == err2 {
+				break
+			}
+			msg += line
+		}
+	}()
+	msg := ""
+	reader := bufio.NewReader(stdout)
+	st := time.Now()
+	for {
+		line, err2 := reader.ReadString('\n')
+		if err2 != nil || io.EOF == err2 {
+			break
+		}
+		msg += line
+		nt := time.Now()
+		if (nt.Unix() - st.Unix()) > 1 {
+			st = nt
+			msg = ""
+		}
+	}
+	err = cmd.Wait()
+	return msg
+}

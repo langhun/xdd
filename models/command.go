@@ -94,45 +94,46 @@ func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 	return nil
 }
 
-/*
+
 func (sender *Sender) handLeUpdateCookie() error {
 	cks := GetJdCookies()
 	a := sender.JoinContens()
 	if !sender.IsAdmin {
 		sender.Reply("你没有权限操作")
-	}else if a == "" {
-		sender. RepLy("参数错误")
+	} else if a == "" {
+		sender.Reply("参数错误")
 	} else {
 		cks = LimitJdCookie(cks, a)
-		if Len(cks)==0 {
+		if len(cks) == 0 {
 			sender.Reply("没有匹配的账号")
 			return errors.New("没有匹配的账号")
 		} else {
 			for i := range cks {
 				eachCk := cks[i]
-				if eachCk.WsKey = "" {
+				if eachCk.WsKey == "" {
 					sender.Reply(fmt.Sprintf("更新失败,账号:%s,未提交 wskey", eachCk.PtPin))
 				} else {
-					res := simpLeCmd(fmt.Sprintf(wskey="pin=%s: wskey=%s:" python wspt.py, eachck.Ptpin, eachCk.WsKey))
-					ss := regexp MustCompile(pt_key=([^;=\s]+);.*?pt_pin=([^;=\s]+):).FindstringSubmatch(res)
+					res := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python wspt.py`, eachCk.PtPin, eachCk.WsKey))
+					ss := regexp.MustCompile(`pt_key=([^;=\s]+);.*?pt_pin=([^;=\s]+);`).FindStringSubmatch(res)
 					if ss != nil {
-						tmpCk := JdCookie{PtKey: ss, PtPin: eachck.Ptpin}
-						if CookieOk(&tmpCk){
-							newCK, _ := GetJdcookie(eachCk.PtPin)
+						tmpCk := JdCookie{PtKey: ss[1], PtPin: eachCk.PtPin}
+						if CookieOK(&tmpCk) {
+							newCK, _ := GetJdCookie(eachCk.PtPin)
 							newCK.InPool(tmpCk.PtKey)
-							sender. RepLy(fmt.sprintf("更新账号,%s,%s", eachCk.PePin, tmpCk.PuKey))
+							sender.Reply(fmt.Sprintf("更新账号,%s,%s", eachCk.PtPin, tmpCk.PtKey))
 						} else {
-							sender.Repy(fmt.Sprintf("更新失败,账号:%s,获取到的ck无效", eachCk.PePin)
-					} else {
-					sender.Repy(fmt.Sprintf("更新失败,账号:%5,未获取到 pt_key,执行结果为:%s", eachCk.PaPin,res))
+							sender.Reply(fmt.Sprintf("更新失败,账号:%s,获取到的ck无效", eachCk.PtPin))
+						}
+						} else {
+							sender.Reply(fmt.Sprintf("更新失败,账号:%s,未获取到 pt_key,执行结果为:%s", eachCk.PtPin, res))
+						}
 					}
 				}
 			}
 		}
+		return nil
 	}
-	return nil
-}
-*/
+
 var codeSignals = []CodeSignal{
 	{
 		Command: []string{"status", "状态"},
@@ -285,17 +286,16 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
-	/*
+
 		{
 			Command: []string{"更新ck", "updateck"},
 			Admin:   true,
 			Handle: func(sender *Sender) interface{} {
-				sender.handleUpdateCookie(func(ck *JdCookie) {
-				})
+				sender.handLeUpdateCookie()
 				return nil
 			},
 		},
-	*/
+
 	{
 		Command: []string{"发送", "通知", "notify", "send"},
 		Admin:   true,
