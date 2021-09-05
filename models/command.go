@@ -114,6 +114,7 @@ func (sender *Sender) handLeUpdateCookie() error {
 					sender.Reply(fmt.Sprintf("更新失败,账号:%s,未提交 wskey", eachCk.PtPin))
 				} else {
 					res := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python wspt.py`, eachCk.PtPin, eachCk.WsKey))
+					sender.Reply(res)
 					ss := regexp.MustCompile(`pt_key=([^;=\s]+);.*?pt_pin=([^;=\s]+);`).FindStringSubmatch(res)
 					if ss != nil {
 						tmpCk := JdCookie{PtKey: ss[1], PtPin: eachCk.PtPin}
@@ -124,15 +125,15 @@ func (sender *Sender) handLeUpdateCookie() error {
 						} else {
 							sender.Reply(fmt.Sprintf("更新失败,账号:%s,获取到的ck无效", eachCk.PtPin))
 						}
-						} else {
-							sender.Reply(fmt.Sprintf("更新失败,账号:%s,未获取到 pt_key,执行结果为:%s", eachCk.PtPin, res))
-						}
+					} else {
+						sender.Reply(fmt.Sprintf("更新失败,账号:%s,未获取到 pt_key,执行结果为:%s", eachCk.PtPin, res))
 					}
 				}
 			}
 		}
-		return nil
 	}
+	return nil
+}
 
 var codeSignals = []CodeSignal{
 	{
@@ -288,7 +289,7 @@ var codeSignals = []CodeSignal{
 	},
 
 		{
-			Command: []string{"更新ck", "updateck"},
+			Command: []string{"更新ck"},
 			Admin:   true,
 			Handle: func(sender *Sender) interface{} {
 				sender.handLeUpdateCookie()
