@@ -378,12 +378,11 @@ func NewWskey(ck *JdCookie) error {
 	return tx.Commit().Error
 }
 
-func CheckIn(pin, key , wskey string) int {
+func CheckIn(pin, key string) int {
 	if !HasPin(pin) {
 		NewJdCookie(&JdCookie{
 			PtKey: key,
 			PtPin: pin,
-			WsKey: wskey,
 			Hack:  False,
 		})
 		return 0
@@ -391,10 +390,6 @@ func CheckIn(pin, key , wskey string) int {
 		ck, _ := GetJdCookie(pin)
 		ck.InPool(key)
 		return 1
-	} else if !HasWsKeys(wskey) {
-		ck, _ := GetJdCookie(pin)
-		ck.InPool(wskey)
-		return 3
 	}
 	return 2
 }
