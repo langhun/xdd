@@ -153,8 +153,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				//xyb := 0
 				for _, s := range ss {
 					ck := JdCookie{
-						PtPin: s[1],
-						WsKey: s[2],
+						PtPin: s[2],
+						WsKey: s[1],
 					}
 					if HasKey(ck.WsKey) {
 						sender.Reply(fmt.Sprintf("重复提交"))
