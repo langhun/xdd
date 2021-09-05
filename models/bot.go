@@ -150,7 +150,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		{ //wskey
 			if strings.Contains(msg, "wskey=") {
 				wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
-				wspt := fmt.Sprintf(`"%s%s"`, msg, wstopt)
+				wstopt1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindStringSubmatch(wstopt)
+				wspt := fmt.Sprintf(`"%s%s"`, msg, wstopt1)
 				sender.Reply(fmt.Sprintf(wspt))
 				ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
 
