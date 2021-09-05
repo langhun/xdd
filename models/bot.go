@@ -161,22 +161,16 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						PtPin: s[1],
 						WsKey: s[2],
 					}
-					sender.Reply(fmt.Sprintf("pin=%s;key=%s",ck.PtPin,ck.WsKey))
 					if HasWsKeys(ck.WsKey) {
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
 							sender.Reply(fmt.Sprintf("已有wskey，开始转换"))
 							wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
-							sender.Reply(fmt.Sprintf(wstopt))
-							wspt := fmt.Sprintf(`"%s%s"`, msg, wstopt)
-							sender.Reply(fmt.Sprintf(wspt))
-							ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
+							wspt := fmt.Sprintf(`"%s;%s"`, ck.WsKey, wstopt)
+							ss1 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
 							if ss1 != nil {
-								ck1 := JdCookie{PtKey: ss1[3], PtPin: ck.PtPin}
-								sender.Reply(fmt.Sprintf(ck1.PtKey))
-								sender.Reply(fmt.Sprintf(ck.PtKey))
+								ck1 := JdCookie{PtKey: ss1[2], PtPin: ck.PtPin}
 									if CookieOK(&ck1) {
 										xyb++
-
 										nck.InPool(ck1.PtKey)
 										msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
 										(&JdCookie{}).Push(msg)
@@ -192,16 +186,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						} else {
 							wstopt := simpleCmd(fmt.Sprintf(`"pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
 							sender.Reply(fmt.Sprintf(wstopt))
-							wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
+							wspt := fmt.Sprintf(`"%s;%s"`, ck.WsKey, wstopt)
 							sender.Reply(fmt.Sprintf(wstopt))
-							ss2 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
-							if len(ss2) > 0 {
-								for _, s := range ss2 {
-									ck2 := JdCookie{
-										PtPin: s[1],
-										WsKey: s[2],
-										PtKey: s[3],
-									}
+							ss2 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindStringSubmatch(wspt)
+							if ss2 != nil {
+								ck2 := JdCookie{WsKey: ss2[1], PtPin: ck.PtPin, PtKey: ss2[2]}
 									if CookieOK(&ck2) {
 										xyb++
 										if Cdle {
@@ -211,15 +200,14 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 										msg := fmt.Sprintf("成功添加账号，%s", ck.PtPin)
 										sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
 										logs.Info(msg)
+									}else {
+										sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", ck2.PtPin, ck2))
 									}
-								}
 							}
-
 						}
-					}
 				}
-
 			}
+		}
 		/*{ //wskey
 			if strings.Contains(msg, "wskey=") {
 				wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
