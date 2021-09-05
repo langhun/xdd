@@ -211,6 +211,7 @@ func (ck *JdCookie) InPool(pt_key string) error {
 	return nil
 }
 
+/*
 func (ck *JdCookie) InJdCookie(pt_key string) error {
 	if ck.ID != 0 {
 		date := Date()
@@ -236,6 +237,7 @@ func (ck *JdCookie) InJdCookie(pt_key string) error {
 	}
 	return nil
 }
+*/
 
 func (ck *JdCookie) InPoolws(wskey, pt_key string) error {
 	if ck.ID != 0 {
