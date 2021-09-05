@@ -165,7 +165,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					if HasWsKeys(ck.WsKey) {
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
 							sender.Reply(fmt.Sprintf("已有wskey，开始转换"))
-							wstopt := simpleCmd(fmt.Sprintf(`"pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
+							wstopt := simpleCmd(fmt.Sprintf(`"pin=%s;wskey=%s" python3 wspt.py`, ck.PtPin,ck.WsKey))
+							sender.Reply(fmt.Sprintf(wstopt))
 							ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wstopt, -1)
 							if len(ss1) > 0 {
 								xyb := 0
