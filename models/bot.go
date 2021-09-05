@@ -217,7 +217,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				}
 
 			}
-		}
 		/*{ //wskey
 			if strings.Contains(msg, "wskey=") {
 				wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
