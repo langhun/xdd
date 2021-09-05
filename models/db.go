@@ -52,7 +52,6 @@ func initDB() {
 	for _, jp := range jps {
 		keys[jp.PtKey] = true
 		pins[jp.PtPin] = true
-		wskeys[jp.WsKey] = true
 	}
 }
 
@@ -75,7 +74,7 @@ func HasWsKeys(wskey string) bool {
 	if _, ok := keys[wskey]; ok {
 		return ok
 	}
-	keys[wskey] = true
+	wskeys[wskey] = true
 	return false
 }
 
