@@ -169,15 +169,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							sender.Reply(fmt.Sprintf(wstopt))
 							wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
 							sender.Reply(fmt.Sprintf(wspt))
-							ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
-							if len(ss1) > 0 {
-								xyb := 0
-								for _, s := range ss1 {
-									ck1 := JdCookie{
-										PtPin: s[1],
-										WsKey: s[2],
-										PtKey: s[3],
-									}
+							ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
+							if ss != nil {
+								ck1 := JdCookie{PtKey: ss1[1], PtPin: ck.PtPin}
 									if CookieOK(&ck1) {
 										xyb++
 										nck.InPool(ck.PtKey)
