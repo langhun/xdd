@@ -121,7 +121,7 @@ func (sender *Sender) handLeUpdateCookie() error {
 						if CookieOK(&tmpCk) {
 							newCK, _ := GetJdCookie(eachCk.PtPin)
 							newCK.InPool(tmpCk.PtKey)
-							sender.Reply(fmt.Sprintf("更新账号,%s,%s", eachCk.PtPin, tmpCk.PtKey))
+							sender.Reply(fmt.Sprintf("更新账号:\n%s,%s", eachCk.PtPin, tmpCk.PtKey))
 						} else {
 							sender.Reply(fmt.Sprintf("更新失败,账号:%s,获取到的ck无效", eachCk.PtPin))
 						}
