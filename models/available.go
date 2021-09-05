@@ -178,7 +178,7 @@ func CookieOK(ck *JdCookie) bool {
 							PtPin: s[2],
 						}
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
-							nck.InJdCookie(ck.PtKey)
+							nck.InPool(ck.PtKey)
 							msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
 							(&JdCookie{}).Push(msg)
 							logs.Info(msg)
