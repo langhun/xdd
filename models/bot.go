@@ -167,7 +167,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							sender.Reply(fmt.Sprintf("已有wskey，开始转换"))
 							wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
 							sender.Reply(fmt.Sprintf(wstopt))
-							wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
+							wspt := fmt.Sprintf(`"%s%s"`, msg, wstopt)
 							sender.Reply(fmt.Sprintf(wspt))
 							ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
 							if ss1 != nil {
