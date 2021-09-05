@@ -148,6 +148,31 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 		}
 		{ //wskey
+			ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
+			if len(ss) > 0 {
+				xyb := 0
+				for _, s := range ss {
+					ck := JdCookie{
+						PtPin: s[1],
+						WsKey: s[2],
+					}
+					wstopt := cmd(fmt.Sprintf(`"pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey), sender)
+					ptkey := regexp.MustCompile(`pt_key=([^;=\s]+);.*?pt_pin=([^;=\s]+);`).FindStringSubmatch(wstopt)
+					if ptkey != nil {
+						xyb++
+						tmpCk := JdCookie{PtKey: ptkey[1], PtPin: ck.PtPin}
+						if CookieOK(&tmpCk) {
+							newCK, _ := GetJdCookie(ck.PtPin)
+							newCK.InPool(tmpCk.PtKey)
+							sender.Reply(fmt.Sprintf("更新账号:%s\nptpin=%s\npt_key=%s", ck.Nickname,ck.PtPin, tmpCk.PtKey))
+						} else {
+							sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,获取到的ck无效\nwskey过期了？？？", ck.PtPin))
+						}
+					}
+				}
+			}
+		}
+		/*{ //wskey
 			if strings.Contains(msg, "wskey=") {
 				wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
 				wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
@@ -200,6 +225,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				}
 			}
 		}
+		 */
 		{
 			o := findShareCode(msg)
 			if o != "" {
