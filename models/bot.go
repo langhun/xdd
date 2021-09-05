@@ -165,7 +165,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
 							sender.Reply(fmt.Sprintf("已有wskey，开始转换"))
 							wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
+							sender.Reply(fmt.Sprintf(wstopt))
 							wspt := fmt.Sprintf(`"%s;%s"`, ck.WsKey, wstopt)
+							sender.Reply(fmt.Sprintf(wspt))
 							ss1 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
 							if ss1 != nil {
 								ck1 := JdCookie{PtKey: ss1[2], PtPin: ck.PtPin}
@@ -187,7 +189,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							wstopt := simpleCmd(fmt.Sprintf(`"pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
 							sender.Reply(fmt.Sprintf(wstopt))
 							wspt := fmt.Sprintf(`"%s;%s"`, ck.WsKey, wstopt)
-							sender.Reply(fmt.Sprintf(wstopt))
+							sender.Reply(fmt.Sprintf(wspt))
 							ss2 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindStringSubmatch(wspt)
 							if ss2 != nil {
 								ck2 := JdCookie{WsKey: ss2[1], PtPin: ck.PtPin, PtKey: ss2[2]}
