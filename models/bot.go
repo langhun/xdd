@@ -153,9 +153,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				//xyb := 0
 				for _, s := range ss {
 					ck := JdCookie{
-						PtPin: s[2],
-						WsKey: s[1],
+						PtPin: s[1],
+						WsKey: s[2],
 					}
+					sender.Reply(fmt.Sprintf("pin=%s\n;key=%s",ck.PtPin,ck.WsKey))
+					/*
 					if HasKey(ck.WsKey) {
 						sender.Reply(fmt.Sprintf("重复提交"))
 					} else {
@@ -174,7 +176,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							logs.Info(msg)
 						}
 					}
+					*/
 				}
+
 			}
 		}
 		/*{ //wskey
