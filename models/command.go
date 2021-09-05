@@ -111,7 +111,7 @@ func (sender *Sender) handLeUpdateCookie() error {
 			for i := range cks {
 				eachCk := cks[i]
 				if eachCk.WsKey == "" {
-					sender.Reply(fmt.Sprintf("更新失败！！！\n账号:%s,未提交wskey", eachCk.PtPin))
+					sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未提交wskey", eachCk.PtPin))
 				} else {
 					res := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, eachCk.PtPin, eachCk.WsKey))
 					sender.Reply("获取到wskey，开始更新")
@@ -121,12 +121,12 @@ func (sender *Sender) handLeUpdateCookie() error {
 						if CookieOK(&tmpCk) {
 							newCK, _ := GetJdCookie(eachCk.PtPin)
 							newCK.InPool(tmpCk.PtKey)
-							sender.Reply(fmt.Sprintf("更新账号:\nptpin=%s\npt_key=%s", eachCk.PtPin, tmpCk.PtKey))
+							sender.Reply(fmt.Sprintf("更新账号:%s\nptpin=%s\npt_key=%s", eachCk.Nickname,eachCk.PtPin, tmpCk.PtKey))
 						} else {
-							sender.Reply(fmt.Sprintf("更新失败,账号:%s,获取到的ck无效", eachCk.PtPin))
+							sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,获取到的ck无效\nwskey过期了？？？", eachCk.PtPin))
 						}
 					} else {
-						sender.Reply(fmt.Sprintf("更新失败,账号:%s,未获取到 pt_key,执行结果为:%s", eachCk.PtPin, res))
+						sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", eachCk.PtPin, res))
 					}
 				}
 			}
