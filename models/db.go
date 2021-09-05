@@ -19,6 +19,7 @@ var ENV = "env"
 var TASK = "TASK"
 var keys map[string]bool
 var pins map[string]bool
+var wskeys map[string]bool
 
 func initDB() {
 	var err error
@@ -45,11 +46,13 @@ func initDB() {
 	)
 	keys = make(map[string]bool)
 	pins = make(map[string]bool)
+	wskeys = make(map[string]bool)
 	jps := []JdCookiePool{}
 	db.Find(&jps)
 	for _, jp := range jps {
 		keys[jp.PtKey] = true
 		pins[jp.PtPin] = true
+		wskeys[jp.WsKey] = true
 	}
 }
 
@@ -66,6 +69,13 @@ func HasKey(key string) bool {
 		return ok
 	}
 	keys[key] = true
+	return false
+}
+func HasWsKeys(wskey string) bool {
+	if _, ok := keys[wskey]; ok {
+		return ok
+	}
+	keys[wskey] = true
 	return false
 }
 
@@ -368,11 +378,12 @@ func NewWskey(ck *JdCookie) error {
 	return tx.Commit().Error
 }
 
-func CheckIn(pin, key string) int {
+func CheckIn(pin, key , wskey string) int {
 	if !HasPin(pin) {
 		NewJdCookie(&JdCookie{
 			PtKey: key,
 			PtPin: pin,
+			WsKey: wskey,
 			Hack:  False,
 		})
 		return 0
@@ -380,6 +391,10 @@ func CheckIn(pin, key string) int {
 		ck, _ := GetJdCookie(pin)
 		ck.InPool(key)
 		return 1
+	} else if !HasWsKeys(wskey) {
+		ck, _ := GetJdCookie(pin)
+		ck.InPool(wskey)
+		return 3
 	}
 	return 2
 }

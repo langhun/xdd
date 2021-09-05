@@ -156,12 +156,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						PtPin: s[1],
 						WsKey: s[2],
 					}
-					sender.Reply(fmt.Sprintf("pin=%s\n;key=%s",ck.PtPin,ck.WsKey))
-					/*
-					if HasKey(ck.WsKey) {
-						sender.Reply(fmt.Sprintf("重复提交"))
-					} else {
+					sender.Reply(fmt.Sprintf("pin=%s;\nkey=%s",ck.PtPin,ck.WsKey))
+					if HasWsKeys(ck.WsKey) {
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
+							sender.Reply(fmt.Sprintf("已有wskey，开始转换"))
 							nck.InPool(ck.PtKey)
 							msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
 							(&JdCookie{}).Push(msg)
@@ -175,8 +173,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
 							logs.Info(msg)
 						}
+						}
 					}
-					*/
 				}
 
 			}
