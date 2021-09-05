@@ -170,11 +170,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
 							sender.Reply(fmt.Sprintf(wspt))
 							ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
-							if ss != nil {
+							if ss1 != nil {
 								ck1 := JdCookie{PtKey: ss1[1], PtPin: ck.PtPin}
 									if CookieOK(&ck1) {
 										xyb++
-										nck.InPool(ck.PtKey)
+										nck.InPool(ck1.PtKey)
 										msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
 										(&JdCookie{}).Push(msg)
 										logs.Info(msg)
