@@ -173,7 +173,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
 							logs.Info(msg)
 						}
-						}
 					}
 				}
 
