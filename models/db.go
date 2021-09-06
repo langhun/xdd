@@ -50,9 +50,9 @@ func initDB() {
 	jps := []JdCookiePool{}
 	db.Find(&jps)
 	for _, jp := range jps {
+		wskeys[jp.WsKey] = true
 		keys[jp.PtKey] = true
 		pins[jp.PtPin] = true
-		wskeys[jp.WsKey] = true
 	}
 }
 
