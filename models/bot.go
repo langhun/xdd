@@ -203,7 +203,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									}
 								}
 							}
-						sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", ck.PtPin, ck))
 						}
 					}
 					go func() {

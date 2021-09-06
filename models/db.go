@@ -19,7 +19,7 @@ var ENV = "env"
 var TASK = "TASK"
 var keys map[string]bool
 var pins map[string]bool
-var skews map[string]bool
+var wskeys map[string]bool
 
 func initDB() {
 	var err error
@@ -44,14 +44,15 @@ func initDB() {
 		&Env{},
 		&Wish{},
 	)
-	keys = make(map[string]bool)
+	wskeys = make(map[string]bool)
 	pins = make(map[string]bool)
-	skews = make(map[string]bool)
+	wskeys = make(map[string]bool)
 	jps := []JdCookiePool{}
 	db.Find(&jps)
 	for _, jp := range jps {
 		keys[jp.PtKey] = true
 		pins[jp.PtPin] = true
+		wskeys[jp.WsKey] = true
 	}
 }
 
@@ -71,10 +72,10 @@ func HasKey(key string) bool {
 	return false
 }
 func HasWsKeys(wskey string) bool {
-	if _, ok := keys[wskey]; ok {
+	if _, ok := wskeys[wskey]; ok {
 		return ok
 	}
-	skews[wskey] = true
+	wskeys[wskey] = true
 	return false
 }
 
