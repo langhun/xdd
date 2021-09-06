@@ -161,7 +161,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						PtPin: s[1],
 						WsKey: s[2],
 					}
-					if HasWsKeys(ck.WsKey) {
+					if HasPin(ck.PtPin) {
 						sender.Reply(fmt.Sprintf("11111已有wskey，开始转换..."))
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
 							sender.Reply(fmt.Sprintf("已有wskey，开始转换..."))
