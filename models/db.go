@@ -335,7 +335,7 @@ func (ck *JdCookie) addwskey(wskey, pt_key string) error {
 			return tx.Rollback().Error
 		}
 		go test2(fmt.Sprintf("wskey=%s;pt_key=%s;pt_pin=%s;", wskey, pt_key, ck.PtPin))
-		if err := tx.Create(&JdCookiePool{
+		if err := tx.Create(&JdCookie{
 			WsKey:    wskey,
 			PtKey:    pt_key,
 			PtPin:    ck.PtPin,
