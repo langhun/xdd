@@ -179,7 +179,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									}else {
 										sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,获取到的ck无效\nwskey过期了？？？", ck.PtPin))
 										sender.Reply(fmt.Sprintf("替换wskey中..."))
-										nck.addwskey(ck1.WsKey,ck1.PtKey)
+										ck.Update(WsKey,ck.WsKey)
 										sender.Reply(fmt.Sprintf("替换成功。再次试试？"))
 									}
 								}
@@ -197,7 +197,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 											ck.Hack = True
 										}
 										NewWskey(&ck1)
-										nck.addwskey(ck.WsKey,ck1.PtKey)
+										ck.Update(WsKey,ck.WsKey)
 										sender.Reply(fmt.Sprintf("添加账号成功：%s", ck.PtPin))
 										sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
 									}else {
