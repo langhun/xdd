@@ -173,7 +173,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									if CookieOK(&ck1) {
 										xyb++
 										nck.InPool(ck1.PtKey)
-										//nck.addwskey(ck.WsKey,ck1.PtKey)
+										nck.addwskey(ck.WsKey,ck1.PtKey)
 										msg := fmt.Sprintf("更新账号成功：%s", ck.PtPin)
 										(&JdCookie{}).Push(msg)
 										logs.Info(msg)
@@ -186,26 +186,26 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								}
 							}
 						}else {
-						sender.Reply(fmt.Sprintf("没有wskey，"))
-						wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
-						wspt := fmt.Sprintf(`"wskey=%s;%s"`, ck.WsKey, wstopt)
-						sender.Reply(fmt.Sprintf("没有wskey，\n%s",wspt))
-						ss1 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
-						if ss1 != nil {
-							ck1 := JdCookie{WsKey: ss1[1], PtPin: ck.PtPin, PtKey: ss1[2]}
-							if CookieOK(&ck1) {
-								xyb++
-								if Cdle {
-									ck.Hack = True
+							sender.Reply(fmt.Sprintf("没有wskey，"))
+							wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
+							wspt := fmt.Sprintf(`"wskey=%s;%s"`, ck.WsKey, wstopt)
+							sender.Reply(fmt.Sprintf("没有wskey，\n%s",wspt))
+							ss1 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
+							if ss1 != nil {
+								ck1 := JdCookie{WsKey: ss1[1], PtPin: ck.PtPin, PtKey: ss1[2]}
+								if CookieOK(&ck1) {
+									xyb++
+									if Cdle {
+										ck.Hack = True
+									}
+									NewWskey(&ck1)
+									sender.Reply(fmt.Sprintf("添加账号成功：%s", ck.PtPin))
+									sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
+								}else {
+									sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", ck1.PtPin, ck1))
 								}
-								NewWskey(&ck1)
-								sender.Reply(fmt.Sprintf("添加账号成功：%s", ck.PtPin))
-								sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
-							}else {
-								sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", ck1.PtPin, ck1))
 							}
 						}
-					}
 					}
 					go func() {
 						Save <- &JdCookie{}
