@@ -173,8 +173,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 										xyb++
 										nck.InPool(ck1.PtKey)
 										sender.Reply(fmt.Sprintf("%s;%s",ck.WsKey,ck1.PtKey))
-										//nck.addwskey(ck.WsKey,ck1.PtKey)
-										NewWskey(&ck1)
+										nck.addwskey(ck.WsKey,ck1.PtKey)
 										msg := fmt.Sprintf("更新账号成功：%s", ck.PtPin)
 										(&JdCookie{}).Push(msg)
 										logs.Info(msg)
