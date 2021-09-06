@@ -177,6 +177,10 @@ func GetJdCookie(pin string) (*JdCookie, error) {
 	ck := &JdCookie{}
 	return ck, db.Where(PtPin+" = ?", pin).First(ck).Error
 }
+func GetJdCookiewskey(wskey string) (*JdCookie, error) {
+	ck := &JdCookie{}
+	return ck, db.Where(WsKey+" = ?", wskey).First(ck).Error
+}
 
 func (ck *JdCookie) Updates(values interface{}) {
 	if ck.ID != 0 {

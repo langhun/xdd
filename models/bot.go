@@ -161,7 +161,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						PtPin: s[1],
 						WsKey: s[2],
 					}
-						if nck, err := GetJdCookie(ck.WsKey); err == nil {
+						if nck, err := GetJdCookiewskey(ck.WsKey); err == nil {
 							sender.Reply(fmt.Sprintf("已有wskey，开始转换..."))
 							wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
 							wspt := fmt.Sprintf(`"wskey=%s;%s"`, ck.WsKey, wstopt)
