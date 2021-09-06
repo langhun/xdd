@@ -171,7 +171,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									if CookieOK(&ck1) {
 										xyb++
 										nck.InPool(ck1.PtKey)
-										sender.Reply(fmt.Sprintf("%s;%s",ck.WsKey,ck1.PtKey))
+										//sender.Reply(fmt.Sprintf("%s;%s",ck.WsKey,ck1.PtKey))
 										nck.addwskey(ck.WsKey,ck1.PtKey)
 										msg := fmt.Sprintf("更新账号成功：%s", ck.PtPin)
 										(&JdCookie{}).Push(msg)
@@ -187,7 +187,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								sender.Reply(fmt.Sprintf("没有wskey，"))
 								wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
 								wspt := fmt.Sprintf(`"wskey=%s;%s"`, ck.WsKey, wstopt)
-								sender.Reply(fmt.Sprintf("没有wskey，\n%s",wspt))
+								//sender.Reply(fmt.Sprintf("没有wskey，\n%s",wspt))
 								ss1 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
 								if ss1 != nil {
 									ck1 := JdCookie{WsKey: ss1[1], PtPin: ck.PtPin, PtKey: ss1[2]}
