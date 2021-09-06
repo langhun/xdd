@@ -187,20 +187,21 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								wspt := fmt.Sprintf(`"wskey=%s;%s"`, ck.WsKey, wstopt)
 								ss1 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
 								if ss1 != nil {
-									ck2 := JdCookie{WsKey: ss1[1], PtPin: ck.PtPin, PtKey: ss1[2]}
-									if CookieOK(&ck2) {
+									ck1 := JdCookie{WsKey: ss1[1], PtPin: ck.PtPin, PtKey: ss1[2]}
+									if CookieOK(&ck1) {
 										xyb++
 										if Cdle {
 											ck.Hack = True
 										}
-										NewWskey(&ck2)
+										NewWskey(&ck1)
 										sender.Reply(fmt.Sprintf("添加账号成功：%s", ck.PtPin))
 										sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
 									}else {
-										sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", ck2.PtPin, ck2))
+										sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", ck1.PtPin, ck1))
 									}
 								}
 							}
+						sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", ck.PtPin, ck))
 						}
 					}
 					go func() {
