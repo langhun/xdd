@@ -161,7 +161,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						PtPin: s[1],
 						WsKey: s[2],
 					}
-						sender.Reply(fmt.Sprintf("11111已有wskey，开始转换..."))
 						if nck, err := GetJdCookie(ck.WsKey); err == nil {
 							sender.Reply(fmt.Sprintf("已有wskey，开始转换..."))
 							wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
@@ -198,6 +197,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 											ck.Hack = True
 										}
 										NewWskey(&ck1)
+										nck.addwskey(ck.WsKey,ck1.PtKey)
 										sender.Reply(fmt.Sprintf("添加账号成功：%s", ck.PtPin))
 										sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
 									}else {
