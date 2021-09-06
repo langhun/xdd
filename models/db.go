@@ -46,7 +46,7 @@ func initDB() {
 	)
 	wskeys = make(map[string]bool)
 	pins = make(map[string]bool)
-	wskeys = make(map[string]bool)
+	keys = make(map[string]bool)
 	jps := []JdCookiePool{}
 	db.Find(&jps)
 	for _, jp := range jps {
