@@ -183,6 +183,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									}
 								}
 							}else {
+								sender.Reply(fmt.Sprintf("没有wskey，"))
 								wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
 								wspt := fmt.Sprintf(`"wskey=%s;%s"`, ck.WsKey, wstopt)
 								ss1 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
