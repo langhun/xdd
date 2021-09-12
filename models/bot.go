@@ -195,7 +195,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								logs.Info(msg)
 							} else {
 								if nck.WsKey == ck.WsKey {
-									msg := fmt.Sprintf("已有wskey,更新ptkey")
+									msg := fmt.Sprintf("重复wskey,更新ptkey")
 									nck.Updates(JdCookie{
 										PtKey: ck.PtKey,
 									})
