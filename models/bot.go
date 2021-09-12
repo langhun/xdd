@@ -152,111 +152,74 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return nil
 			}
 		}
-		{ //wskey
-			ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
-			if len(ss) > 0 {
-				xyb := 0
-				for _, s := range ss {
-					ck := JdCookie{
-						PtPin: s[1],
-						WsKey: s[2],
-					}
-						if nck, err := GetJdCookiewskey(ck.WsKey); err == nil {
-							sender.Reply(fmt.Sprintf("已有wskey，开始转换..."))
-							wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
-							wspt := fmt.Sprintf(`"wskey=%s;%s"`, ck.WsKey, wstopt)
-							ss1 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
-							if ss1 != nil {
-								ck1 := JdCookie{PtKey: ss1[2], PtPin: ck.PtPin}
-									if CookieOK(&ck1) {
-										xyb++
-										nck.InPool(ck1.PtKey)
-										//sender.Reply(fmt.Sprintf("%s;%s",ck.WsKey,ck1.PtKey))
-										nck.addwskey(ck.WsKey,ck1.PtKey)
-										msg := fmt.Sprintf("更新账号成功：%s", ck.PtPin)
-										(&JdCookie{}).Push(msg)
-										logs.Info(msg)
-									}else {
-										sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,获取到的ck无效\nwskey过期了？？？", ck.PtPin))
-										sender.Reply(fmt.Sprintf("替换wskey中..."))
-										ck.Update(WsKey,ck.WsKey)
-										sender.Reply(fmt.Sprintf("替换成功。再次试试？"))
-									}
-								}
-							} else {
-								sender.Reply(fmt.Sprintf("没有wskey，"))
-								wstopt := simpleCmd(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, ck.PtPin,ck.WsKey))
-								wspt := fmt.Sprintf(`"wskey=%s;%s"`, ck.WsKey, wstopt)
-								//sender.Reply(fmt.Sprintf("没有wskey，\n%s",wspt))
-								ss1 := regexp.MustCompile(`wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(wspt)
-								if ss1 != nil {
-									ck1 := JdCookie{WsKey: ss1[1], PtPin: ck.PtPin, PtKey: ss1[2]}
-									if CookieOK(&ck1) {
-										xyb++
-										if Cdle {
-											ck.Hack = True
-										}
-										NewWskey(&ck1)
-										ck.Update(WsKey,ck.WsKey)
-										sender.Reply(fmt.Sprintf("添加账号成功：%s", ck.PtPin))
-										sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
-									}else {
-										sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", ck1.PtPin, ck1))
-									}
-								}
-							}
-						}
-						go func() {
-							Save <- &JdCookie{}
-						}()
-						return nil
-					}
-				}
-		/*{ //wskey
-			if strings.Contains(msg, "wskey=") {
-				wstopt := cmd(fmt.Sprintf(`wskey="%s" python3 wspt.py`, msg), sender)
-				wspt := fmt.Sprintf(`"%s;%s"`, msg, wstopt)
-				ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+);pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(wspt, -1)
+		if strings.Contains(msg, "wskey=") {
+			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, msg), &Sender{})
+			logs.Info(rsp)
+			ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
+			if strings.Contains(rsp, "错误") {
+				logs.Error("wskey错误")
+				sender.Reply(fmt.Sprintf("wskey错误"))
+			} else {
 
-				if len(ss) > 0 {
-					xyb := 0
-					for _, s := range ss {
+				if len(ss1) > 0 {
+					for _, s := range ss1 {
 						ck := JdCookie{
 							PtPin: s[1],
+							PtKey: rsp,
 							WsKey: s[2],
-							PtKey: s[3],
 						}
-						sender.Reply(fmt.Sprintf("pin--%s wskey--%s ptkey--%s \n", ck.PtPin, ck.WsKey, ck.PtKey))
-						if CookieOK(&ck) {
-							xyb++
-							if sender.IsQQ() {
-								ck.QQ = sender.UserID
-							} else if sender.IsTG() {
-								//ck.Telegram = sender.UserID
-							}
-							if HasKey(ck.PtKey) {
-								sender.Reply(fmt.Sprintf("重复提交"))
+
+						ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
+						for _, s1 := range ss {
+							ck.PtPin = s1[2]
+							ck.PtKey = s1[1]
+						}
+
+						if sender.IsQQ() {
+							ck.QQ = sender.UserID
+						} else if sender.IsTG() {
+							ck.Telegram = sender.UserID
+						}
+						if nck, err := GetJdCookie(ck.PtPin); err == nil {
+							nck.InPool(ck.PtKey)
+							if nck.WsKey == "" || len(nck.WsKey) == 0 {
+								nck.Updates(JdCookie{
+									WsKey: ck.WsKey,
+								})
+								if sender.IsQQ() {
+									ck.Update(QQ, ck.QQ)
+								}
+								nck.Update(PtKey, ck.PtKey)
+								msg := fmt.Sprintf("写入WsKey，并更新账号%s", ck.PtPin)
+								sender.Reply(fmt.Sprintf(msg))
+								(&JdCookie{}).Push(msg)
+								logs.Info(msg)
 							} else {
-								if nck, err := GetJdCookie(ck.PtPin); err == nil {
-									//nck.InPoolws(ck.WsKey, ck.PtKey)
-									nck.addwskey(ck.WsKey, ck.PtKey)
-									msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+								if nck.WsKey == ck.WsKey {
+									msg := fmt.Sprintf("重复写入")
+									sender.Reply(fmt.Sprintf(msg))
 									(&JdCookie{}).Push(msg)
 									logs.Info(msg)
 								} else {
-									if Cdle {
-										ck.Hack = True
-									}
-									NewWskey(&ck)
-									msg := fmt.Sprintf("添加账号，%s", ck.PtPin)
-									sender.Reply(fmt.Sprintf("wskey添加成功，%s", ck.WsKey))
-									sender.Reply(fmt.Sprintf("很棒，许愿币+1，余额%d", AddCoin(sender.UserID)))
+									nck.Updates(JdCookie{
+										WsKey: ck.WsKey,
+									})
+									msg := fmt.Sprintf("更新WsKey，并更新账号%s", ck.PtPin)
+									sender.Reply(fmt.Sprintf(msg))
+									(&JdCookie{}).Push(msg)
 									logs.Info(msg)
 								}
 							}
 						} else {
-							sender.Reply(fmt.Sprintf("无效，许愿币-1，余额%d", RemCoin(sender.UserID, 1)))
+							NewJdCookie(&ck)
+							msg := fmt.Sprintf("添加账号，用户名：%s", ck.PtPin)
+							if sender.IsQQ() {
+								ck.Update(QQ, ck.QQ)
+							}
+							sender.Reply(fmt.Sprintf(msg))
+							logs.Info(msg)
 						}
+
 					}
 					go func() {
 						Save <- &JdCookie{}
@@ -264,8 +227,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					return nil
 				}
 			}
+
 		}
-		 */
 		{
 			o := findShareCode(msg)
 			if o != "" {
