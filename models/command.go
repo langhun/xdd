@@ -111,7 +111,7 @@ func (sender *Sender) handLeUpdateCookie() error {
 					sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未提交wskey", eachCk.PtPin))
 				} else {
 					sender.Reply(fmt.Sprintf(`wskey="pin=%s;wskey=%s;" python3 wspt.py`, eachCk.PtPin, eachCk.WsKey))
-					res := simpleCmd(fmt.Sprintf(`"pin=%s;wskey=%s;" python3 wspt.py`, eachCk.PtPin, eachCk.WsKey))
+					res := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, eachCk.PtPin, eachCk.WsKey))
 					sender.Reply(fmt.Sprintf("\n账号:%s", res))
 					sender.Reply("获取到wskey，开始更新...")
 					ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(res)
