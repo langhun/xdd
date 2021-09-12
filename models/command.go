@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/beego/beego/v2/client/httplib"
-	"github.com/beego/beego/v2/server/web"
 	"gorm.io/gorm"
 )
 
@@ -94,7 +92,6 @@ func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 	return nil
 }
 
-
 func (sender *Sender) handLeUpdateCookie() error {
 	cks := GetJdCookies()
 	a := sender.JoinContens()
@@ -121,7 +118,7 @@ func (sender *Sender) handLeUpdateCookie() error {
 						if CookieOK(&tmpCk) {
 							newCK, _ := GetJdCookie(eachCk.PtPin)
 							newCK.InPool(tmpCk.PtKey)
-							sender.Reply(fmt.Sprintf("更新账号成功：%s\nptpin=%s\npt_key=%s", eachCk.Nickname,eachCk.PtPin, tmpCk.PtKey))
+							sender.Reply(fmt.Sprintf("更新账号成功：%s\nptpin=%s\npt_key=%s", eachCk.Nickname, eachCk.PtPin, tmpCk.PtKey))
 						} else {
 							sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,获取到的ck无效\nwskey过期了？？？", eachCk.PtPin))
 						}
@@ -206,16 +203,18 @@ var codeSignals = []CodeSignal{
 	{
 		Command: []string{"qrcode", "扫码", "二维码", "scan"},
 		Handle: func(sender *Sender) interface{} {
-			url := fmt.Sprintf("http://127.0.0.1:%d/api/login/qrcode.png?tp=%s&uid=%d&gid=%d", web.BConfig.Listen.HTTPPort, sender.Type, sender.UserID, sender.ChatID)
-			if sender.Type == "tgg" {
-				url += fmt.Sprintf("&mid=%v&unm=%v", sender.MessageID, sender.Username)
-			}
-			rsp, err := httplib.Get(url).Response()
-			if err != nil {
-				return nil
-			}
-			return rsp
-			//return "小傻妞和京东没有任何关系，请使用ninja。"
+			/*
+				url := fmt.Sprintf("http://127.0.0.1:%d/api/login/qrcode.png?tp=%s&uid=%d&gid=%d", web.BConfig.Listen.HTTPPort, sender.Type, sender.UserID, sender.ChatID)
+				if sender.Type == "tgg" {
+					url += fmt.Sprintf("&mid=%v&unm=%v", sender.MessageID, sender.Username)
+				}
+				rsp, err := httplib.Get(url).Response()
+				if err != nil {
+					return nil
+				}
+				return rsp
+			*/
+			return fmt.Sprintf("没有扫码了，直接发送key。")
 		},
 	},
 	{
@@ -287,16 +286,43 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
-
-		{
-			Command: []string{"更新ck"},
-			Admin:   true,
-			Handle: func(sender *Sender) interface{} {
-				sender.handLeUpdateCookie()
-				return nil
-			},
+	{
+		Command: []string{"详细查询", "query"},
+		Handle: func(sender *Sender) interface{} {
+			sender.handleJdCookies(func(ck *JdCookie) {
+				sender.Reply(ck.Query1())
+			})
+			return nil
 		},
-
+	},
+	{
+		Command: []string{"更新账号"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			sender.handLeUpdateCookie()
+			return nil
+		},
+	},
+	{
+		Command: []string{"更新所有账号"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			sender.Reply("更新所有账号")
+			updateCookie()
+			return nil
+		},
+	},
+	{
+		Command: []string{"删除", "clean"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			sender.handleJdCookies(func(ck *JdCookie) {
+				ck.Removes(ck)
+				sender.Reply(fmt.Sprintf("已删除账号%s", ck.Nickname))
+			})
+			return nil
+		},
+	},
 	{
 		Command: []string{"发送", "通知", "notify", "send"},
 		Admin:   true,
@@ -463,6 +489,20 @@ var codeSignals = []CodeSignal{
 				})
 			}
 			runTask(&Task{Path: name, Envs: envs}, sender)
+			return nil
+		},
+	},
+	{
+		Command: []string{"绑定"},
+		Handle: func(sender *Sender) interface{} {
+			qq := Int(sender.Contents[0])
+			if len(sender.Contents) > 1 {
+				sender.Contents = sender.Contents[1:]
+				sender.handleJdCookies(func(ck *JdCookie) {
+					ck.Update(QQ, qq)
+					sender.Reply(fmt.Sprintf("已设置账号%s的QQ为%v。", ck.Nickname, ck.QQ))
+				})
+			}
 			return nil
 		},
 	},

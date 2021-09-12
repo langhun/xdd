@@ -2,6 +2,8 @@ package models
 
 import (
 	"fmt"
+	"github.com/beego/beego/v2/core/logs"
+	"regexp"
 	"strings"
 	"time"
 
@@ -19,7 +21,6 @@ var ENV = "env"
 var TASK = "TASK"
 var keys map[string]bool
 var pins map[string]bool
-var wskeys map[string]bool
 
 func initDB() {
 	var err error
@@ -69,11 +70,12 @@ func HasKey(key string) bool {
 	keys[key] = true
 	return false
 }
+
 func HasWsKeys(wskey string) bool {
-	if _, ok := wskeys[wskey]; ok {
+	if _, ok := keys[wskey]; ok {
 		return ok
 	}
-	wskeys[wskey] = true
+	keys[wskey] = true
 	return false
 }
 
@@ -175,10 +177,6 @@ func GetJdCookie(pin string) (*JdCookie, error) {
 	ck := &JdCookie{}
 	return ck, db.Where(PtPin+" = ?", pin).First(ck).Error
 }
-func GetJdCookiewskey(wskey string) (*JdCookie, error) {
-	ck := &JdCookie{}
-	return ck, db.Where(WsKey+" = ?", wskey).First(ck).Error
-}
 
 func (ck *JdCookie) Updates(values interface{}) {
 	if ck.ID != 0 {
@@ -188,12 +186,22 @@ func (ck *JdCookie) Updates(values interface{}) {
 		db.Model(ck).Where(PtPin+" = ?", ck.PtPin).Updates(values)
 	}
 }
+
 func (ck *JdCookie) Update(column string, value interface{}) {
 	if ck.ID != 0 {
 		db.Model(ck).Update(column, value)
 	}
 	if ck.PtPin != "" {
 		db.Model(JdCookie{}).Where(PtPin+" = ?", ck.PtPin).Update(column, value)
+	}
+}
+
+func (ck *JdCookie) Removes(values interface{}) {
+	if ck.ID != 0 {
+		db.Model(ck).Delete(values)
+	}
+	if ck.PtPin != "" {
+		db.Model(ck).Where(PtPin+" = ?", ck.PtPin).Delete(values)
 	}
 }
 
@@ -209,61 +217,7 @@ func (ck *JdCookie) InPool(pt_key string) error {
 		if err := tx.Create(&JdCookiePool{
 			PtPin:    ck.PtPin,
 			PtKey:    pt_key,
-			CreateAt: date,
-		}).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
-		tx.Model(ck).Updates(map[string]interface{}{
-			Available: True,
-			PtKey:     pt_key,
-		})
-		return tx.Commit().Error
-	}
-	return nil
-}
-
-/*
-func (ck *JdCookie) InJdCookie(pt_key string) error {
-	if ck.ID != 0 {
-		date := Date()
-		tx := db.Begin()
-		jp := &JdCookie{}
-		if tx.Where(fmt.Sprintf("%s = '%s' and %s = '%s'", PtPin, ck.PtPin, PtKey, pt_key)).First(jp).Error == nil {
-			return tx.Rollback().Error
-		}
-		go test2(fmt.Sprintf("pt_key=%s;pt_pin=%s;", pt_key, ck.PtPin))
-		if err := tx.Create(&JdCookie{
-			PtPin:    ck.PtPin,
-			PtKey:    pt_key,
-			CreateAt: date,
-		}).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
-		tx.Model(ck).Updates(map[string]interface{}{
-			Available: True,
-			PtKey:     pt_key,
-		})
-		return tx.Commit().Error
-	}
-	return nil
-}
-*/
-
-func (ck *JdCookie) InPoolws(wskey, pt_key string) error {
-	if ck.ID != 0 {
-		date := Date()
-		tx := db.Begin()
-		jp := &JdCookiePool{}
-		if tx.Where(fmt.Sprintf("%s = '%s' and %s = '%s' and %s = '%s'", WsKey, wskey, PtKey, pt_key, PtPin, ck.PtPin)).First(jp).Error == nil {
-			return tx.Rollback().Error
-		}
-		go test2(fmt.Sprintf("wskey=%s;pt_key=%s;pt_pin=%s;", wskey, pt_key, ck.PtPin))
-		if err := tx.Create(&JdCookiePool{
-			WsKey:    wskey,
-			PtKey:    pt_key,
-			PtPin:    ck.PtPin,
+			WsKey:    ck.WsKey,
 			CreateAt: date,
 		}).Error; err != nil {
 			tx.Rollback()
@@ -320,6 +274,7 @@ func NewJdCookie(ck *JdCookie) error {
 	if err := tx.Create(&JdCookiePool{
 		PtPin:    ck.PtPin,
 		PtKey:    ck.PtKey,
+		WsKey:    ck.WsKey,
 		CreateAt: date,
 	}).Error; err != nil {
 		tx.Rollback()
@@ -327,34 +282,8 @@ func NewJdCookie(ck *JdCookie) error {
 	}
 	return tx.Commit().Error
 }
-func (ck *JdCookie) addwskey(wskey, pt_key string) error {
-	if ck.ID != 0 {
-		date := Date()
-		tx := db.Begin()
-		jp := &JdCookie{}
-		if tx.Where(fmt.Sprintf("%s = '%s' and %s = '%s' and %s = '%s'", WsKey, wskey, PtKey, pt_key, PtPin, ck.PtPin)).First(jp).Error == nil {
-			return tx.Rollback().Error
-		}
-		go test2(fmt.Sprintf("wskey=%s;pt_key=%s;pt_pin=%s;", wskey, pt_key, ck.PtPin))
-		if err := tx.Create(&JdCookie{
-			WsKey:    wskey,
-			PtKey:    pt_key,
-			PtPin:    ck.PtPin,
-			CreateAt: date,
-		}).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
-		tx.Model(ck).Updates(map[string]interface{}{
-			Available: True,
-			WsKey:     wskey,
-		})
-		return tx.Commit().Error
-	}
-	return nil
-}
 
-func NewWskey(ck *JdCookie) error {
+func UpdateCookie(ck *JdCookie) error {
 	if ck.Hack == "" {
 		ck.Hack = False
 	}
@@ -362,21 +291,76 @@ func NewWskey(ck *JdCookie) error {
 	date := Date()
 	ck.CreateAt = date
 	tx := db.Begin()
-	if err := tx.Create(ck).Error; err != nil {
+	if err := tx.Updates(ck).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
-	go test2(fmt.Sprintf("wskey=%s;pt_key=%s;pt_pin=%s;", ck.WsKey, ck.PtKey, ck.PtPin))
+	go test2(fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin))
 	if err := tx.Create(&JdCookiePool{
-		WsKey:    ck.WsKey,
 		PtPin:    ck.PtPin,
 		PtKey:    ck.PtKey,
+		WsKey:    ck.WsKey,
 		CreateAt: date,
 	}).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
 	return tx.Commit().Error
+}
+
+func updateCookie() {
+	cks := GetJdCookies()
+	l := len(cks)
+	logs.Info(l)
+	for i := range cks {
+		if len(cks[i].WsKey) > 0 {
+			time.Sleep(10 * time.Second)
+			ck := cks[i]
+			//JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
+			var pinky = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
+			rsp := cmd(fmt.Sprintf(`python3 test.py "%s"`, pinky), &Sender{})
+			if strings.Contains(rsp, "错误") {
+				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
+				(&JdCookie{}).Push(fmt.Sprintf("Wskey失效，%s", ck.PtPin))
+			} else {
+				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
+				if len(ss) > 0 {
+					xyb := 0
+					for _, s := range ss {
+						ck := JdCookie{
+							PtKey: s[1],
+							PtPin: s[2],
+						}
+						if CookieOK(&ck) {
+							xyb++
+							if HasKey(ck.PtKey) {
+								(&JdCookie{}).Push(fmt.Sprintf("重复提交"))
+							} else {
+								if nck, err := GetJdCookie(ck.PtPin); err == nil {
+									nck.InPool(ck.PtKey)
+									msg := fmt.Sprintf("定时更新账号，%s", ck.PtPin)
+									(&JdCookie{}).Push(msg)
+									logs.Info(msg)
+								} else {
+									NewJdCookie(&ck)
+									msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
+									logs.Info(msg)
+								}
+							}
+						} else {
+							(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
+						}
+					}
+				} else {
+					(&JdCookie{}).Push(fmt.Sprintf("转换失败，请重新转换，%s", ck.PtPin))
+				}
+				go func() {
+					Save <- &JdCookie{}
+				}()
+			}
+		}
+	}
+	(&JdCookie{}).Push(fmt.Sprintf("所有CK转换完成，共%d个", len(cks)))
 }
 
 func CheckIn(pin, key string) int {

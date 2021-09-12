@@ -49,7 +49,6 @@ func InitReplies() {
 	}
 }
 
-
 func wstopt() {
 
 }
@@ -196,7 +195,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								logs.Info(msg)
 							} else {
 								if nck.WsKey == ck.WsKey {
-									msg := fmt.Sprintf("重复写入")
+									msg := fmt.Sprintf("已有wskey,重复写入")
 									sender.Reply(fmt.Sprintf(msg))
 									(&JdCookie{}).Push(msg)
 									logs.Info(msg)
