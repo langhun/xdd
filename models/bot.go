@@ -196,6 +196,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							} else {
 								if nck.WsKey == ck.WsKey {
 									msg := fmt.Sprintf("已有wskey,更新ptkey")
+									nck.Updates(JdCookie{
+										PtKey: ck.PtKey,
+									})
 									sender.Reply(fmt.Sprintf(msg))
 									//(&JdCookie{}).Push(msg)
 									logs.Info(msg)
