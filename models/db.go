@@ -317,15 +317,13 @@ func updateCookie() {
 			time.Sleep(10 * time.Second)
 			ck := cks[i]
 			//JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
-			var pinky = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-			(&JdCookie{}).Push(fmt.Sprintf("Wskey失效，%s", pinky))
-			rsp := cmd(fmt.Sprintf(`python3 test.py "%s"`, pinky), &Sender{})
+			rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
 			if strings.Contains(rsp, "错误") {
 				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
 				(&JdCookie{}).Push(fmt.Sprintf("Wskey失效，%s", ck.PtPin))
 			} else {
 				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
-				if len(ss) > 0 {
+				if ss != nil {
 					xyb := 0
 					for _, s := range ss {
 						ck := JdCookie{
