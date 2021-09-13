@@ -65,5 +65,8 @@ no_ghproxy: true
 #日常资产推送时间
 daily_asset_push_cron:
 
+#wskey定时转换时间
+wskey_to_ptkey_cron:
+
 repos:
   - git: https://github.com/shufflewzc/faker2.git

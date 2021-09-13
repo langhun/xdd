@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/beego/beego/v2/adapter/logs"
 	"github.com/robfig/cron/v3"
 )
@@ -19,6 +20,22 @@ func initCron() {
 		c.AddFunc("3 */1 * * *", initVersion)
 		c.AddFunc("40 */1 * * *", GitPullAll)
 
+	}
+	c.Start()
+}
+
+func initWSPT() {
+	c = cron.New()
+	if Config.WskeyToPtkeyCron != "" {
+		_, err := c.AddFunc(Config.WskeyToPtkeyCron, func() {
+			fmt.Println("开始wskey转换")
+			updateCookie()
+		})
+		if err != nil {
+			logs.Warn("自动转换wskey任务失败：%v", err)
+		} else {
+			logs.Info("自动转换wskey任务就绪")
+		}
 	}
 	c.Start()
 }
