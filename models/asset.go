@@ -90,7 +90,7 @@ func (ck *JdCookie) Query() string {
 		msgs = append(msgs, fmt.Sprintf("账号备注：%s", ck.Note))
 	}
 	asset := Asset{}
-	if CookieOK(ck) {
+	if ckok(ck) {
 		msgs = append(msgs, fmt.Sprintf("用户等级：%v", ck.UserLevel))
 		msgs = append(msgs, fmt.Sprintf("等级名称：%v", ck.LevelName))
 		cookie := fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin)
