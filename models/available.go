@@ -135,6 +135,84 @@ func initCookie() {
 
 }
 
+func ckok(ck *JdCookie) bool {
+	// fmt.Println(ck.PtPin)
+	cookie := "pt_key=" + ck.PtKey + ";pt_pin=" + ck.PtPin + ";"
+	// fmt.Println(cookie)
+	// jdzz(cookie, make(chan int64))
+	if ck == nil {
+		return true
+	}
+	req := httplib.Get("https://plogin.m.jd.com/cgi-bin/ml/islogin")
+	req.Header("Cookie", cookie)
+	req.Header("Referer", "https://h5.m.jd.com/")
+	req.Header("User-Agent", "jdapp;iPhone;10.1.2;15.0;network/wifi;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1")
+	data, err := req.Bytes()
+	if err != nil {
+		return true
+	}
+	ui := &UserInfoResult{}
+	if nil != json.Unmarshal(data, ui) {
+		return true
+	}
+	switch ui.Retcode {
+	case "1001": //ck.BeanNum
+		(&JdCookie{}).Push(ui.Msg)
+		if ui.Msg == "not login" {
+			if ck.Available == True {
+				//JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
+				ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
+				if len(ck.WsKey) > 0 {
+					rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
+					JdCookie{}.Push(fmt.Sprintf("自动转换wskey---\n%s", rsp))
+					ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
+					if len(ss) > 0 {
+						for _, s := range ss {
+							ck := JdCookie{
+								PtKey: s[1],
+								PtPin: s[2],
+							}
+							if nck, err := GetJdCookie(ck.PtPin); err == nil {
+								nck.InPool(ck.PtKey)
+								msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+								(&JdCookie{}).Push(msg)
+								logs.Info(msg)
+							} else {
+								if Cdle {
+									ck.Hack = True
+								}
+								(&JdCookie{}).Push("转换失败")
+							}
+						}
+
+						return false
+					}
+				}
+			}
+			return false
+		}
+	case "0":
+		if url.QueryEscape(ui.Data.UserInfo.BaseInfo.CurPin) != ck.PtPin {
+			return av2(cookie)
+		}
+		if ui.Data.UserInfo.BaseInfo.Nickname != ck.Nickname || ui.Data.AssetInfo.BeanNum != ck.BeanNum || ui.Data.UserInfo.BaseInfo.UserLevel != ck.UserLevel || ui.Data.UserInfo.BaseInfo.LevelName != ck.LevelName {
+			ck.Updates(JdCookie{
+				Nickname:  ui.Data.UserInfo.BaseInfo.Nickname,
+				BeanNum:   ui.Data.AssetInfo.BeanNum,
+				Available: True,
+				UserLevel: ui.Data.UserInfo.BaseInfo.UserLevel,
+				LevelName: ui.Data.UserInfo.BaseInfo.LevelName,
+			})
+			ck.UserLevel = ui.Data.UserInfo.BaseInfo.UserLevel
+			ck.LevelName = ui.Data.UserInfo.BaseInfo.LevelName
+			ck.Nickname = ui.Data.UserInfo.BaseInfo.Nickname
+			ck.BeanNum = ui.Data.AssetInfo.BeanNum
+		}
+		return true
+	}
+	return av2(cookie)
+}
+
 func CookieOK(ck *JdCookie) bool {
 	// fmt.Println(ck.PtPin)
 	cookie := "pt_key=" + ck.PtKey + ";pt_pin=" + ck.PtPin + ";"
@@ -146,10 +224,10 @@ func CookieOK(ck *JdCookie) bool {
 	//req := httplib.Get("https://me-api.jd.com/user_new/info/GetJDUserInfoUnion")
 	req := httplib.Get("https://plogin.m.jd.com/cgi-bin/ml/islogin")
 	req.Header("Cookie", cookie)
-	//req.Header("Accept", "*/*")
-	//req.Header("Accept-Language", "zh-cn,")
-	//req.Header("Connection", "keep-alive,")
-	//req.Header("Referer", "https://home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&")
+	req.Header("Accept", "*/*")
+	req.Header("Accept-Language", "zh-cn,")
+	req.Header("Connection", "keep-alive,")
+	req.Header("Referer", "https://home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&")
 	req.Header("Referer", "https://h5.m.jd.com/")
 	//req.Header("Host", "me-api.jd.com")
 	req.Header("User-Agent", "jdapp;iPhone;10.1.2;15.0;network/wifi;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1")
