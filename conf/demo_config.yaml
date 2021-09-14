@@ -4,7 +4,7 @@ mode: parallel
 containers:
   #青龙2.2、青龙2.8、v1v2v3v4v5访问地址
   - address: http://192.168.31.233:5700
-  #用户名
+    #用户名
     username: admin
     #密码
     password: admin
