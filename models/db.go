@@ -312,6 +312,7 @@ func updateCookie() {
 	cks := GetJdCookies()
 	l := len(cks)
 	logs.Info(l)
+	xyb := 0
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
 			time.Sleep(10 * time.Second)
@@ -324,7 +325,6 @@ func updateCookie() {
 			} else {
 				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
 				if ss != nil {
-					xyb := 0
 					for _, s := range ss {
 						ck := JdCookie{
 							PtKey: s[1],
@@ -359,7 +359,7 @@ func updateCookie() {
 			}
 		}
 	}
-	(&JdCookie{}).Push(fmt.Sprintf("所有CK转换完成，共%d个", len(cks)))
+	(&JdCookie{}).Push(fmt.Sprintf("所有CK转换完成，共%d个", xyb))
 }
 
 func CheckIn(pin, key string) int {
