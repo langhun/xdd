@@ -340,7 +340,7 @@ func updateCookie() {
 								if nck, err := GetJdCookie(ck.PtPin); err == nil {
 									nck.InPool(ck.PtKey)
 									msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-									(&JdCookie{}).Push(msg)
+									//(&JdCookie{}).Push(msg)
 									logs.Info(msg)
 								} else {
 									NewJdCookie(&ck)
@@ -353,7 +353,7 @@ func updateCookie() {
 						}
 					}
 				} else {
-					(&JdCookie{}).Push(fmt.Sprintf("转换失败，请重新转换，%s", ck.PtPin))
+					//(&JdCookie{}).Push(fmt.Sprintf("转换失败，请重新转换，%s", ck.PtPin))
 				}
 				go func() {
 					Save <- &JdCookie{}
