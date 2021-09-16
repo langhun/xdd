@@ -1,7 +1,7 @@
 import json, requests, re
 import sys
 requests.packages.urllib3.disable_warnings()
-ws=sys.argv[1]
+
 def getsign():
     url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
     for i in range(3):
@@ -129,7 +129,6 @@ def checkwskey(wskey):
        return False
 
 if __name__ == '__main__':
-    cloud_arg = cloud_info()
-    ua = cloud_arg['User-Agent']
+
     getToken(ws)
 
