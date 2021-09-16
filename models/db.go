@@ -333,7 +333,7 @@ func updateCookie() {
 				if nck, err := GetJdCookie(ck.PtPin); err == nil {
 					nck.InPool(ck.PtKey)
 					msg := fmt.Sprintf("定时更新账号，%s", ck.PtPin)
-					(&JdCookie{}).Push(msg)
+					//(&JdCookie{}).Push(msg)
 					logs.Info(msg)
 				} else {
 					nck.Update(Available, false)
