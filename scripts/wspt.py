@@ -6,30 +6,13 @@ def getsign():
     #try:
     #    ## sign = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
 
-    #    sign = 'https://api.jds.codes/gentoken'
-    #    s = requests.get(url=sign).json()
-    #    svv = s['sv']
-    #    stt = s['st']
-    #    suid = s['uuid']
-     #   sign = s['sign']
-     #   return svv, stt, suid, sign
-    #except:
-    #    print('调用sign出错！')
-    try:
-    url = "https://api.jds.codes/gentoken"
-
-    r = requests.get(url=url).json()
-    r = json.loads(r.text)
-    data=r["data"]["sign"].split("&")
-            svv = data[5]
-            stt = data[4]
-            suid = data[1]
-            sign = data[6]
-                    print(svv)
-                    print(stt)
-                    print(suid)
-                    print(sign)
-            return svv, stt, suid, sign
+        sign = 'https://api.jds.codes/gentoken'
+        s = requests.get(url=sign).json()
+        svv = s['sv']
+        stt = s['st']
+        suid = s['uuid']
+        sign = s['sign']
+        return svv, stt, suid, sign
     except:
         print('调用sign出错！')
 
