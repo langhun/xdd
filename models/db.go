@@ -313,7 +313,7 @@ func updateCookie() {
 	cks := GetJdCookies()
 	l := len(cks)
 	logs.Info(l)
-	r := rand.Intn(20)
+	r := rand.Intn(10)
 	xya := 0
 	xyb := 0
 	for i := range cks {
