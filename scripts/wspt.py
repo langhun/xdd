@@ -17,12 +17,8 @@ def getsign():
     #    print('调用sign出错！')
     try:
     url = "https://api.jds.codes/gentoken"
-    body = {"url": "https://home.m.jd.com/myJd/newhome.action"}
-    headers = {
-        "user-agent": "Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36",
-        "Content-Type":"application/json"
-    }
-    r = requests.post(url, headers=headers, data=json.dumps(body))
+
+    r = requests.get(url=url).json()
     r = json.loads(r.text)
     data=r["data"]["sign"].split("&")
             svv = data[5]
