@@ -1,34 +1,10 @@
-import json, requests, re
+import json
 import sys
+import requests
+import re
+import time
 requests.packages.urllib3.disable_warnings()
-
-def getsign():
-    url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
-    for i in range(3):
-        try:
-            res = requests.get(url=url, verify=False, timeout=20)
-        except requests.exceptions.ConnectTimeout:
-            logger.info("\n获取Sign超时, 正在重试!" + str(i))
-            time.sleep(1)
-        except requests.exceptions.ReadTimeout:
-            logger.info("\n获取Sign超时, 正在重试!" + str(i))
-            time.sleep(1)
-        except Exception as err:
-            logger.info(str(err) + "\n未知错误, 退出脚本!")
-            sys.exit(1)
-        else:
-            try:
-                sign_list = json.loads(res.text)
-            except:
-                logger.info("Sign Json错误")
-                sys.exit(1)
-            else:
-                svv = sign_list['sv']
-                stt = sign_list['st']
-                suid = sign_list['uuid']
-                jign = sign_list['sign']
-                return svv, stt, suid, jign
-
+ws=sys.argv[1]
 def getToken(wskey):
     headers = {
         'cookie': wskey,
@@ -68,6 +44,8 @@ def getToken(wskey):
     else:
         return appjmp(wskey, tokenKey)
 
+
+# 返回值 bool jd_ck
 def appjmp(wskey, tokenKey):
     headers = {
         'User-Agent': ua,
@@ -93,11 +71,40 @@ def appjmp(wskey, tokenKey):
             return False, jd_ck
         else:
             logger.info(str(wskey) + ";wskey状态正常\n")
+            print(jd_ck)
             return True, jd_ck
     except:
         logger.info("接口转换失败, 默认wskey失效\n")
         wskey = "pt_" + str(wskey.split(";")[0])
         return False, wskey
+
+
+# 返回值 svv, stt, suid, jign
+def get_sign():
+    url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
+        try:
+            res = requests.get(url=url, verify=False, timeout=20)
+        except requests.exceptions.ConnectTimeout:
+            logger.info("\n获取Sign超时, 正在重试!" + str(i))
+            time.sleep(1)
+        except requests.exceptions.ReadTimeout:
+            logger.info("\n获取Sign超时, 正在重试!" + str(i))
+            time.sleep(1)
+        except Exception as err:
+            logger.info(str(err) + "\n未知错误, 退出脚本!")
+            sys.exit(1)
+        else:
+            try:
+                sign_list = json.loads(res.text)
+            except:
+                logger.info("Sign Json错误")
+                sys.exit(1)
+            else:
+                svv = sign_list['sv']
+                stt = sign_list['st']
+                suid = sign_list['uuid']
+                jign = sign_list['sign']
+                return svv, stt, suid, jign
 
 def cloud_info():
     url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/check_api'
@@ -129,6 +136,5 @@ def checkwskey(wskey):
        return False
 
 if __name__ == '__main__':
-
     getToken(ws)
 
