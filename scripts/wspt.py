@@ -81,7 +81,9 @@ def appjmp(wskey, tokenKey):
 
 # 返回值 svv, stt, suid, jign
 def get_sign():
-    url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
+    url = str(base64.b64decode(
+        'aHR0cHM6Ly9oZWxsb2Rucy5jb2RpbmcubmV0L3Avc2lnbi9kL2pzaWduL2dpdC9yYXcvbWFzdGVyL3NpZ24=').decode())
+    for i in range(3):
         try:
             res = requests.get(url=url, verify=False, timeout=20)
         except requests.exceptions.ConnectTimeout:
@@ -105,6 +107,7 @@ def get_sign():
                 suid = sign_list['uuid']
                 jign = sign_list['sign']
                 return svv, stt, suid, jign
+
 
 def cloud_info():
     url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/check_api'
@@ -136,5 +139,7 @@ def checkwskey(wskey):
        return False
 
 if __name__ == '__main__':
+    cloud_arg = cloud_info()
+    ua = cloud_arg['User-Agent']
     getToken(ws)
 
