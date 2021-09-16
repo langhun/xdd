@@ -167,8 +167,9 @@ func CookieOK(ck *JdCookie) bool {
 				JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
 				ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
 				if len(ck.WsKey) > 0 {
+					JdCookie{}.Push(fmt.Sprintf("获取到wskey.\n"))
 					rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
-					JdCookie{}.Push(fmt.Sprintf("自动转换wskey中---\n%s", rsp))
+					JdCookie{}.Push(fmt.Sprintf("自动转换ptkey中---\n%s", rsp))
 					ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
 					if len(ss) > 0 {
 						for _, s := range ss {
