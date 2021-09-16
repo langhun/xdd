@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
+	"math/rand"
 	"regexp"
 	"strings"
 	"time"
@@ -310,21 +311,17 @@ func UpdateCookie(ck *JdCookie) error {
 
 func updateCookie() {
 	cks := GetJdCookies()
-	l := len(cks)
-	logs.Info(l)
+	s := rand.Intn(30)
 	xya := 0
 	xyb := 0
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
 			xya++
-			time.Sleep(10 * time.Second)
+			time.Sleep(time.Duration(s) * time.Second)
 			ck := cks[i]
-			JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
 			rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
-			JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.WsKey))
 			if strings.Contains(rsp, "错误") {
 				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
-				(&JdCookie{}).Push(fmt.Sprintf("Wskey失效，%s", ck.PtPin))
 			} else {
 				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
 				if ss != nil {
