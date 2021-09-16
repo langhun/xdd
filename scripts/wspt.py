@@ -128,6 +128,7 @@ def cloud_info():
                 logger.info("云端参数解析失败")
                 sys.exit(1)
             else:
+            print(c_info)
                 return c_info
 
 def checkwskey(wskey):
