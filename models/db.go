@@ -321,6 +321,7 @@ func updateCookie() {
 			ck := cks[i]
 			JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
 			rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
+			JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.WsKey))
 			if strings.Contains(rsp, "错误") {
 				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
 				(&JdCookie{}).Push(fmt.Sprintf("Wskey失效，%s", ck.PtPin))
