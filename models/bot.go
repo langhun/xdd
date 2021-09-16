@@ -49,10 +49,6 @@ func InitReplies() {
 	}
 }
 
-func wstopt() {
-
-}
-
 var handleMessage = func(msgs ...interface{}) interface{} {
 	msg := msgs[0].(string)
 	args := strings.Split(msg, " ")
