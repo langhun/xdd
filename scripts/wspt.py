@@ -26,6 +26,7 @@ def getsign():
             suid = data[1]
             sign = data[6]
             return svv, stt, suid, sign
+            print(svv, stt, suid, sign)
     except:
         print('调用sign出错！')
 
