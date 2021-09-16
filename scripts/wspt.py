@@ -4,7 +4,9 @@ requests.packages.urllib3.disable_warnings()
 ws=sys.argv[1]
 def getsign():
     try:
-        sign = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
+        //sign = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
+
+        sign = 'https://api.jds.codes/gentoken'
         s = requests.get(url=sign).json()
         svv = s['sv']
         stt = s['st']
