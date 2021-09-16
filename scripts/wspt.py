@@ -81,7 +81,7 @@ def appjmp(wskey, tokenKey):
 
 # 返回值 svv, stt, suid, jign
 def get_sign():
-    url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sgin'
+    url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
     for i in range(3):
         try:
             res = requests.get(url=url, verify=False, timeout=20)
