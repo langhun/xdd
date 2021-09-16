@@ -161,13 +161,14 @@ func CookieOK(ck *JdCookie) bool {
 	}
 	switch ui.Retcode {
 	case "1001": //ck.BeanNum
+
 		if ui.Msg == "not login" {
 			if ck.Available == True {
-				//JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
+				JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
 				ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
 				if len(ck.WsKey) > 0 {
 					rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
-					JdCookie{}.Push(fmt.Sprintf("自动转换wskey---\n%s", rsp))
+					JdCookie{}.Push(fmt.Sprintf("自动转换wskey中---\n%s", rsp))
 					ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
 					if len(ss) > 0 {
 						for _, s := range ss {
