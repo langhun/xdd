@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
 	"math/rand"
-	"regexp"
 	"strings"
 	"time"
 
@@ -329,35 +328,21 @@ func updateCookie() {
 				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
 				(&JdCookie{}).Push(fmt.Sprintf("Wskey失效，%s", ck.PtPin))
 			} else {
-				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
-				if ss != nil {
-					for _, s := range ss {
-						ck := JdCookie{
-							PtKey: s[1],
-							PtPin: s[2],
-						}
-						if CookieOK(&ck) {
-							xyb++
-							if HasKey(ck.PtKey) {
-								(&JdCookie{}).Push(fmt.Sprintf("重复提交"))
-							} else {
-								if nck, err := GetJdCookie(ck.PtPin); err == nil {
-									nck.InPool(ck.PtKey)
-									msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-									//(&JdCookie{}).Push(msg)
-									logs.Info(msg)
-								} else {
-									NewJdCookie(&ck)
-									msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
-									logs.Info(msg)
-								}
-							}
-						} else {
-							(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
-						}
-					}
+				ptKey := FetchJdCookieValue("pt_key", rsp)
+				ptPin := FetchJdCookieValue("pt_pin", rsp)
+				ck := JdCookie{
+					PtKey: ptKey,
+					PtPin: ptPin,
+				}
+				if nck, err := GetJdCookie(ck.PtPin); err == nil {
+					xyb++
+					nck.InPool(ck.PtKey)
+					msg := fmt.Sprintf("更新账号成功，%s", ck.PtPin)
+					//(&JdCookie{}).Push(msg)
+					logs.Info(msg)
 				} else {
-					(&JdCookie{}).Push(fmt.Sprintf("转换失败，请重新转换，%s", ck.PtPin))
+					nck.Update(Available, false)
+					(&JdCookie{}).Push(fmt.Sprintf("转换失败，请重新转换%s", ck.PtPin))
 				}
 				go func() {
 					Save <- &JdCookie{}
