@@ -304,16 +304,6 @@ var codeSignals = []CodeSignal{
 		},
 	},
 	{
-		Command: []string{"检查账号"},
-		Admin:   true,
-		Handle: func(sender *Sender) interface{} {
-			sender.handleJdCookies(func(ck *JdCookie) {
-				CookieOK(ck)
-			})
-			return nil
-		},
-	},
-	{
 		Command: []string{"更新所有账号", "更新全部账号"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {

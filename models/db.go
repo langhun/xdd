@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
+	"math/rand"
 	"regexp"
 	"strings"
 	"time"
@@ -312,12 +313,13 @@ func updateCookie() {
 	cks := GetJdCookies()
 	l := len(cks)
 	logs.Info(l)
+	r := rand.Intn(10)
 	xya := 0
 	xyb := 0
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
 			xya++
-			time.Sleep(10 * time.Second)
+			time.Sleep(time.Duration(r) * time.Second)
 			ck := cks[i]
 			//JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
 			rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
