@@ -142,6 +142,5 @@ def checkwskey(wskey):
 if __name__ == '__main__':
     cloud_arg = cloud_info()
     ua = cloud_arg['User-Agent']
-    print(ua)
     getToken(ws)
 
