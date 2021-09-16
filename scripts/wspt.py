@@ -81,8 +81,7 @@ def appjmp(wskey, tokenKey):
 
 # 返回值 svv, stt, suid, jign
 def get_sign():
-    url = str(base64.b64decode(
-        'aHR0cHM6Ly9oZWxsb2Rucy5jb2RpbmcubmV0L3Avc2lnbi9kL2pzaWduL2dpdC9yYXcvbWFzdGVyL3NpZ24=').decode())
+    url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sgin'
     for i in range(3):
         try:
             res = requests.get(url=url, verify=False, timeout=20)
@@ -128,8 +127,8 @@ def cloud_info():
                 logger.info("云端参数解析失败")
                 sys.exit(1)
             else:
-            print(c_info)
                 return c_info
+                print(c_info)
 
 def checkwskey(wskey):
     flag = "wskey=" in wskey
