@@ -1,10 +1,11 @@
+import base64
 import json
 import sys
 import requests
 import re
 import time
 requests.packages.urllib3.disable_warnings()
-ws=sys.argv[1]
+# ws=sys.argv[1]
 def getToken(wskey):
     headers = {
         'cookie': wskey,
@@ -27,19 +28,19 @@ def getToken(wskey):
     try:
         res = requests.post(url=url, params=params, headers=headers, data=data, verify=False, timeout=10)
         res_json = json.loads(res.text)
-        # logger.info(res_json)
+        # print(res_json)
         tokenKey = res_json['tokenKey']
-        # logger.info("Token:", tokenKey)
+        # print("Token:", tokenKey)
     except:
         try:
             res = requests.post(url=url, params=params, headers=headers, data=data, verify=False, timeout=20)
             res_json = json.loads(res.text)
-            # logger.info(res_json)
+            # print(res_json)
             tokenKey = res_json['tokenKey']
-            # logger.info("Token:", tokenKey)
+            # print("Token:", tokenKey)
             return appjmp(wskey, tokenKey)
         except:
-            logger.info("WSKEY转换接口出错, 请稍后尝试, 脚本退出")
+            print("WSKEY转换接口出错, 请稍后尝试, 脚本退出")
             sys.exit(1)
     else:
         return appjmp(wskey, tokenKey)
@@ -67,14 +68,14 @@ def appjmp(wskey, tokenKey):
         jd_ck = str(pt_key) + ';' + str(pt_pin) + ';'
         wskey = wskey.split(";")[0]
         if 'fake' in pt_key:
-            logger.info(str(wskey) + ";wskey状态失效\n")
+            print(str(wskey) + ";wskey状态失效\n")
             return False, jd_ck
         else:
-            logger.info(str(wskey) + ";wskey状态正常\n")
+            print(str(wskey) + ";wskey状态正常\n")
             print(jd_ck)
             return True, jd_ck
     except:
-        logger.info("接口转换失败, 默认wskey失效\n")
+        print("接口转换失败, 默认wskey失效\n")
         wskey = "pt_" + str(wskey.split(";")[0])
         return False, wskey
 
@@ -86,19 +87,19 @@ def get_sign():
         try:
             res = requests.get(url=url, verify=False, timeout=20)
         except requests.exceptions.ConnectTimeout:
-            logger.info("\n获取Sign超时, 正在重试!" + str(i))
+            print("\n获取Sign超时, 正在重试!" + str(i))
             time.sleep(1)
         except requests.exceptions.ReadTimeout:
-            logger.info("\n获取Sign超时, 正在重试!" + str(i))
+            print("\n获取Sign超时, 正在重试!" + str(i))
             time.sleep(1)
         except Exception as err:
-            logger.info(str(err) + "\n未知错误, 退出脚本!")
+            print(str(err) + "\n未知错误, 退出脚本!")
             sys.exit(1)
         else:
             try:
                 sign_list = json.loads(res.text)
             except:
-                logger.info("Sign Json错误")
+                print("Sign Json错误")
                 sys.exit(1)
             else:
                 svv = sign_list['sv']
@@ -114,17 +115,17 @@ def cloud_info():
         try:
             res = requests.get(url=url, verify=False, timeout=20).text
         except requests.exceptions.ConnectTimeout:
-            logger.info("\n获取云端参数超时, 正在重试!" + str(i))
+            print("\n获取云端参数超时, 正在重试!" + str(i))
         except requests.exceptions.ReadTimeout:
-            logger.info("\n获取云端参数超时, 正在重试!" + str(i))
+            print("\n获取云端参数超时, 正在重试!" + str(i))
         except Exception as err:
-            logger.info(str(err) + "\n未知错误, 退出脚本!")
+            print(str(err) + "\n未知错误, 退出脚本!")
             sys.exit(1)
         else:
             try:
                 c_info = json.loads(res)
             except:
-                logger.info("云端参数解析失败")
+                print("云端参数解析失败")
                 sys.exit(1)
             else:
                 return c_info
