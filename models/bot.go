@@ -214,11 +214,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 							}
 						} else {
 							NewJdCookie(&ck)
-							msg := fmt.Sprintf("添加账号，用户名：%s", ck.PtPin)
+							msg := fmt.Sprintf("添加账号成功，用户名：%s\n ptkey=%s", ck.PtPin, ck.PtKey)
 							if sender.IsQQ() {
 								ck.Update(QQ, ck.QQ)
 							}
 							sender.Reply(fmt.Sprintf(msg))
+							ck.Query()
 							logs.Info(msg)
 						}
 
