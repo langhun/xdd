@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/beego/beego/v2/core/logs"
 	"regexp"
 	"strings"
 	"time"
@@ -308,6 +309,7 @@ var codeSignals = []CodeSignal{
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			sender.Reply("开始更新所有wskey账号")
+			logs.Info("更新所有账号")
 			updateCookie()
 			return nil
 		},
