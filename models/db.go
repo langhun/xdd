@@ -319,7 +319,7 @@ func updateCookie() {
 			xya++
 			time.Sleep(10 * time.Second)
 			ck := cks[i]
-			//JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
+			JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.Nickname))
 			rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
 			if strings.Contains(rsp, "错误") {
 				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
@@ -332,6 +332,8 @@ func updateCookie() {
 							PtKey: s[1],
 							PtPin: s[2],
 						}
+						JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.PtPin))
+						JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.PtKey))
 						if CookieOK(&ck) {
 							xyb++
 							if HasKey(ck.PtKey) {

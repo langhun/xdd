@@ -6,7 +6,6 @@ import (
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
 	"net/url"
-	"regexp"
 	"strings"
 )
 
@@ -150,7 +149,7 @@ func CookieOK(ck *JdCookie) bool {
 	req.Header("Connection", "keep-alive,")
 	req.Header("Referer", "https://home.m.jd.com/myJd/newhome.action?sceneval=2&ufc=&")
 	req.Header("Host", "me-api.jd.com")
-	req.Header("User-Agent", "jdapp;iPhone;10.1.2;15.0;network/wifi;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1")
+	req.Header("User-Agent", "jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1")
 	data, err := req.Bytes()
 	if err != nil {
 		return true
@@ -170,27 +169,20 @@ func CookieOK(ck *JdCookie) bool {
 					JdCookie{}.Push(fmt.Sprintf("获取到wskey.\n"))
 					rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
 					JdCookie{}.Push(fmt.Sprintf("自动转换ptkey中---\n%s", rsp))
-					ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
-					if len(ss) > 0 {
-						for _, s := range ss {
-							ck := JdCookie{
-								PtKey: s[1],
-								PtPin: s[2],
-							}
-							if nck, err := GetJdCookie(ck.PtPin); err == nil {
-								nck.InPool(ck.PtKey)
-								msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-								(&JdCookie{}).Push(msg)
-								logs.Info(msg)
-							} else {
-								if Cdle {
-									ck.Hack = True
-								}
-								(&JdCookie{}).Push("转换失败")
-							}
-						}
-
-						return false
+					ptKey := FetchJdCookieValue("pt_key", rsp)
+					ptPin := FetchJdCookieValue("pt_pin", rsp)
+					ck := JdCookie{
+						PtKey: ptKey,
+						PtPin: ptPin,
+					}
+					if nck, err := GetJdCookie(ck.PtPin); err == nil {
+						nck.InPool(ck.PtKey)
+						msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+						(&JdCookie{}).Push(msg)
+						logs.Info(msg)
+					} else {
+						nck.Update(Available, false)
+						(&JdCookie{}).Push("转换失败")
 					}
 				}
 			}
