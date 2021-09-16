@@ -330,8 +330,6 @@ func updateCookie() {
 							PtKey: s[1],
 							PtPin: s[2],
 						}
-						JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.PtPin))
-						JdCookie{}.Push(fmt.Sprintf("更新账号账号，%s", ck.PtKey))
 						if CookieOK(&ck) {
 							xyb++
 							if HasKey(ck.PtKey) {
