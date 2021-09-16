@@ -5,7 +5,37 @@ import requests
 import re
 import time
 requests.packages.urllib3.disable_warnings()
-# ws=sys.argv[1]
+ws=sys.argv[1]
+
+
+def get_sign():
+    url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
+    for i in range(3):
+        try:
+            res = requests.get(url=url, verify=False, timeout=20)
+        except requests.exceptions.ConnectTimeout:
+            print("\n获取Sign超时, 正在重试!" + str(i))
+            time.sleep(1)
+        except requests.exceptions.ReadTimeout:
+            print("\n获取Sign超时, 正在重试!" + str(i))
+            time.sleep(1)
+        except Exception as err:
+            print(str(err) + "\n未知错误, 退出脚本!")
+            sys.exit(1)
+        else:
+            try:
+                sign_list = json.loads(res.text)
+            except:
+                print("Sign Json错误")
+                sys.exit(1)
+            else:
+                svv = sign_list['sv']
+                stt = sign_list['st']
+                suid = sign_list['uuid']
+                jign = sign_list['sign']
+                return svv, stt, suid, jign
+
+
 def getToken(wskey):
     headers = {
         'cookie': wskey,
@@ -46,7 +76,7 @@ def getToken(wskey):
         return appjmp(wskey, tokenKey)
 
 
-# 返回值 bool jd_ck
+
 def appjmp(wskey, tokenKey):
     headers = {
         'User-Agent': ua,
@@ -71,42 +101,13 @@ def appjmp(wskey, tokenKey):
             print(str(wskey) + ";wskey状态失效\n")
             return False, jd_ck
         else:
-            print(str(wskey) + ";wskey状态正常\n")
             print(jd_ck)
+            print(str(wskey) + ";wskey状态正常\n")
             return True, jd_ck
     except:
         print("接口转换失败, 默认wskey失效\n")
         wskey = "pt_" + str(wskey.split(";")[0])
         return False, wskey
-
-
-# 返回值 svv, stt, suid, jign
-def get_sign():
-    url = 'https://hellodns.coding.net/p/sign/d/jsign/git/raw/master/sign'
-    for i in range(3):
-        try:
-            res = requests.get(url=url, verify=False, timeout=20)
-        except requests.exceptions.ConnectTimeout:
-            print("\n获取Sign超时, 正在重试!" + str(i))
-            time.sleep(1)
-        except requests.exceptions.ReadTimeout:
-            print("\n获取Sign超时, 正在重试!" + str(i))
-            time.sleep(1)
-        except Exception as err:
-            print(str(err) + "\n未知错误, 退出脚本!")
-            sys.exit(1)
-        else:
-            try:
-                sign_list = json.loads(res.text)
-            except:
-                print("Sign Json错误")
-                sys.exit(1)
-            else:
-                svv = sign_list['sv']
-                stt = sign_list['st']
-                suid = sign_list['uuid']
-                jign = sign_list['sign']
-                return svv, stt, suid, jign
 
 
 def cloud_info():
