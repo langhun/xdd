@@ -352,7 +352,7 @@ func updateCookie() {
 						}
 					}
 				} else {
-					(&JdCookie{}).Push(fmt.Sprintf("转换失败，请重新转换，%s", ck.PtPin))
+					//(&JdCookie{}).Push(fmt.Sprintf("转换失败，请重新转换，%s", ck.PtPin))
 				}
 				go func() {
 					Save <- &JdCookie{}
