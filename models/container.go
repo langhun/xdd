@@ -5,16 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/beego/beego/v2/client/httplib"
+	"github.com/beego/beego/v2/core/logs"
+	"github.com/buger/jsonparser"
 	"io"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
-	"time"
-
-	"github.com/beego/beego/v2/client/httplib"
-	"github.com/beego/beego/v2/core/logs"
-	"github.com/buger/jsonparser"
 )
 
 const (
@@ -352,34 +350,18 @@ func (c *Container) read() error {
 }
 
 func (c *Container) getToken() error {
-	version, err := GetQlVersion(c.Address)
-	logs.Debug(err)
-	if version == "2.9" {
-		token, err := getSqlToken(c.Address)
-		if err != nil {
-			logs.Error(err)
-		}
-		if token == nil {
-			err2, done := getT(c, token)
-			if done {
-				return err2
+	if c.Version == "2.9" {
+		req := httplib.Get(c.Address + fmt.Sprintf(`/open/auth/token?client_id=%s&client_secret=%s`, c.ClientID, c.Secret))
+		req.Header("Content-Type", "application/json;charset=UTF-8")
+		if rsp, err := req.Response(); err == nil {
+			data, err := ioutil.ReadAll(rsp.Body)
+			if err != nil {
+				return err
 			}
+			c.Token, _ = jsonparser.GetString(data, "data", "token")
+			logs.Info(c.Token)
 		} else {
-			logs.Info("缓存token")
-			h, _ := time.ParseDuration("-624h")
-			tZero := time.Now().Add(h)
-			logs.Info(tZero)
-			logs.Info(token.Expiration)
-			t_ := token.Expiration.Sub(tZero)
-			if t_ < 0 {
-				err2, done := getT(c, token)
-				if done {
-					return err2
-				}
-			} else {
-				logs.Info("获取缓存成功")
-				c.Token = token.Token
-			}
+			return err
 		}
 	} else {
 		req := httplib.Post(c.Address + "/api/login")
@@ -399,28 +381,6 @@ func (c *Container) getToken() error {
 		}
 	}
 	return nil
-}
-
-func getT(c *Container, token *Token) (error, bool) {
-	logs.Info("获取token")
-	req := httplib.Get(c.Address + fmt.Sprintf(`/open/auth/token?client_id=%s&client_secret=%s`, c.ClientID, c.Secret))
-	req.Header("Content-Type", "application/json;charset=UTF-8")
-	if rsp, err := req.Response(); err == nil {
-		data, err := ioutil.ReadAll(rsp.Body)
-		if err != nil {
-			return err, true
-		}
-		c.Token, _ = jsonparser.GetString(data, "data", "token")
-		token.Token, _ = jsonparser.GetString(data, "data", "token")
-		zero, _ := time.ParseInLocation("2006-01-02", time.Now().Local().Format("2006-01-02"), time.Local)
-		token.Expiration = zero
-		token.Address = c.Address
-		setSqlToken(token)
-		logs.Info(c.Token + token.Expiration.String())
-	} else {
-		return err, true
-	}
-	return nil, false
 }
 
 func (c *Container) request(ss ...string) ([]byte, error) {
