@@ -363,6 +363,7 @@ func (c *Container) getToken() error {
 			logs.Info(c.Token)
 			if c.Token == "" {
 				c.Token, _ = jsonparser.GetString(data, "data", "token")
+				logs.Info(c.Token)
 			}
 		} else {
 			return err
