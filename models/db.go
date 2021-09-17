@@ -312,13 +312,12 @@ func UpdateCookie(ck *JdCookie) error {
 
 func updateCookie() {
 	cks := GetJdCookies()
-	s := rand.Intn(30)
 	xya := 0
 	xyb := 0
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
 			xya++
-			time.Sleep(time.Duration(s) * time.Second)
+			time.Sleep(time.Second * time.Duration(rand.Intn(20)))
 			ck := cks[i]
 			rsp := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, ck.PtPin, ck.WsKey))
 			if strings.Contains(rsp, "错误") {
