@@ -235,56 +235,6 @@ func (c *Container) write(cks []JdCookie) error {
 	return nil
 }
 
-func (c *Container) request(ss ...string) ([]byte, error) {
-	var api, method, body string
-	for _, s := range ss {
-		if s == GET || s == POST || s == PUT || s == DELETE {
-			method = s
-		} else if strings.Contains(s, "/api/") {
-			if c.Version == "2.9" {
-				api = strings.ReplaceAll(s, "api", "open")
-			} else {
-				api = s
-			}
-		} else {
-			body = s
-		}
-	}
-	var req *httplib.BeegoHTTPRequest
-	var i = 0
-	for {
-		i++
-		switch method {
-		case POST:
-			req = httplib.Post(c.Address + api)
-		case PUT:
-			req = httplib.Put(c.Address + api)
-		case DELETE:
-			req = httplib.Delete(c.Address + api)
-		default:
-			req = httplib.Get(c.Address + api)
-		}
-		req.Header("Authorization", "Bearer "+c.Token)
-		if body != "" {
-			req.Header("Content-Type", "application/json;charset=UTF-8")
-			req.Body(body)
-		}
-		if data, err := req.Bytes(); err == nil {
-			code, _ := jsonparser.GetInt(data, "code")
-			if code == 200 {
-				return data, nil
-			} else {
-				logs.Warn(string(data))
-				if i >= 5 {
-					return nil, errors.New("异常")
-				}
-				c.getToken()
-			}
-		}
-	}
-	//return []byte{}, nil
-}
-
 func (c *Container) read() error {
 	c.Available = true
 	switch c.Type {
@@ -436,6 +386,56 @@ func (c *Container) getToken() error {
 		}
 	}
 	return nil
+}
+
+func (c *Container) request(ss ...string) ([]byte, error) {
+	var api, method, body string
+	for _, s := range ss {
+		if s == GET || s == POST || s == PUT || s == DELETE {
+			method = s
+		} else if strings.Contains(s, "/api/") {
+			if c.Version == "2.9" {
+				api = strings.ReplaceAll(s, "api", "open")
+			} else {
+				api = s
+			}
+		} else {
+			body = s
+		}
+	}
+	var req *httplib.BeegoHTTPRequest
+	var i = 0
+	for {
+		i++
+		switch method {
+		case POST:
+			req = httplib.Post(c.Address + api)
+		case PUT:
+			req = httplib.Put(c.Address + api)
+		case DELETE:
+			req = httplib.Delete(c.Address + api)
+		default:
+			req = httplib.Get(c.Address + api)
+		}
+		req.Header("Authorization", "Bearer "+c.Token)
+		if body != "" {
+			req.Header("Content-Type", "application/json;charset=UTF-8")
+			req.Body(body)
+		}
+		if data, err := req.Bytes(); err == nil {
+			code, _ := jsonparser.GetInt(data, "code")
+			if code == 200 {
+				return data, nil
+			} else {
+				logs.Warn(string(data))
+				if i >= 5 {
+					return nil, errors.New("异常")
+				}
+				c.getToken()
+			}
+		}
+	}
+	//return []byte{}, nil
 }
 
 func GetQlVersion(address string) (string, error) {
