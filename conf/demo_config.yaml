@@ -8,6 +8,10 @@ containers:
     username: admin
     #密码
     password: admin
+    #2.9版本以上ClientID
+    ClientID:
+    #2.9版本以上Client Secret
+    Secret:
     #权重 balance模式下权重越高分得的ck越多，默认1
     weigth:  
     #单独对容器进行模式设置

@@ -45,6 +45,7 @@ func initDB() {
 		&UserAgent{},
 		&Env{},
 		&Wish{},
+		&Token{},
 	)
 	pins = make(map[string]bool)
 	keys = make(map[string]bool)
@@ -121,6 +122,12 @@ type JdCookiePool struct {
 	CreateAt string `gorm:"column:CreateAt"`
 }
 
+type Token struct {
+	Expiration time.Time
+	Token      string
+	Address    string
+}
+
 var UserLevel = "UserLevel"
 var LevelName = "LevelName"
 var ScanedAt = "ScanedAt"
@@ -144,6 +151,7 @@ var Save chan *JdCookie
 var ExecPath string
 var Telegram = "Telegram"
 var Hack = "Hack"
+var Address = "Address"
 
 const (
 	Fruit        = "Fruit"
@@ -376,4 +384,18 @@ func CheckIn(pin, key string) int {
 		return 1
 	}
 	return 2
+}
+
+func setSqlToken(token *Token) error {
+	tx := db.Begin()
+	if err := tx.Create(token).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
+}
+
+func getSqlToken(address string) (*Token, error) {
+	token := &Token{}
+	return token, db.Where(Address+" = ?", address).Order("expiration desc").First(token).Error
 }
