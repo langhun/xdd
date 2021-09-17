@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/beego/beego/v2/client/httplib"
-	"github.com/beego/beego/v2/core/logs"
-	"github.com/buger/jsonparser"
 	"io"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/beego/beego/v2/client/httplib"
+	"github.com/beego/beego/v2/core/logs"
+	"github.com/buger/jsonparser"
 )
 
 const (
@@ -28,8 +29,8 @@ type Container struct {
 	Address   string
 	Username  string
 	Password  string
-	ClientID  string
-	Secret    string
+	ClientID  string `yaml:"client_ID"`
+	Secret    string `yaml:"client_secret"`
 	Path      string
 	Version   string
 	Token     string
@@ -57,7 +58,7 @@ func initContainer() {
 			}
 			version, err := GetQlVersion(Config.Containers[i].Address)
 			if err == nil {
-				if Config.Containers[i].getToken() == nil {
+				if Config.Containers[i].getToken(version) == nil {
 					logs.Info("青龙" + version + "登录成功")
 				} else {
 					logs.Warn("青龙" + version + "登录失败")
@@ -114,7 +115,7 @@ func initContainer() {
 func (c *Container) write(cks []JdCookie) error {
 	switch c.Type {
 	case "ql":
-		if c.Version == "2.9" || c.Version == "2.8" {
+		if c.Version == "2.8" || c.Version == "2.9" {
 			if len(c.Delete) > 0 {
 				c.request("/api/envs", DELETE, fmt.Sprintf(`[%s]`, strings.Join(c.Delete, ",")))
 			}
@@ -349,10 +350,11 @@ func (c *Container) read() error {
 	return nil
 }
 
-func (c *Container) getToken() error {
+func (c *Container) getToken(version string) error {
 	if c.Version == "2.9" {
 		req := httplib.Get(c.Address + fmt.Sprintf("/open/auth/token?client_id=%s&client_secret=%s", c.ClientID, c.Secret))
 		req.Header("Content-Type", "application/json;charset=UTF-8")
+		//req.Body(fmt.Sprintf(`{"username":"%s","password":"%s"}`, c.Username, c.Password))
 		if rsp, err := req.Response(); err == nil {
 			data, err := ioutil.ReadAll(rsp.Body)
 			if err != nil {
@@ -424,7 +426,7 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 				if i >= 5 {
 					return nil, errors.New("异常")
 				}
-				c.getToken()
+				c.getToken(c.Version)
 			}
 		}
 	}
