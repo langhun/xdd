@@ -177,13 +177,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								if nck, err := GetJdCookie(ck.PtPin); err == nil {
 									nck.InPool(ck.PtKey)
 									if nck.WsKey == "" || len(nck.WsKey) == 0 {
-										nck.Updates(JdCookie{
-											WsKey: ck.WsKey,
-										})
 										if sender.IsQQ() {
 											ck.Update(QQ, ck.QQ)
 										}
-										nck.Update(PtKey, ck.PtKey)
+										nck.Update(WsKey, ck.WsKey)
 										msg := fmt.Sprintf("写入WsKey，并更新账号%s", ck.PtPin)
 										sender.Reply(fmt.Sprintf(msg))
 										(&JdCookie{}).Push(msg)
@@ -191,16 +188,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									} else {
 										if nck.WsKey == ck.WsKey {
 											msg := fmt.Sprintf("重复wskey,更新ptkey")
-											nck.Updates(JdCookie{
-												PtKey: ck.PtKey,
-											})
 											sender.Reply(fmt.Sprintf(msg))
 											//(&JdCookie{}).Push(msg)
 											logs.Info(msg)
 										} else {
-											nck.Updates(JdCookie{
-												WsKey: ck.WsKey,
-											})
+											nck.Update(WsKey, ck.WsKey)
 											msg := fmt.Sprintf("更新WsKey，并更新账号%s", ck.PtPin)
 											sender.Reply(fmt.Sprintf(msg))
 											(&JdCookie{}).Push(msg)
@@ -218,6 +210,10 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									logs.Info(msg)
 								}
 							}
+							msg := fmt.Sprintf("失效ck%s", ck.PtPin)
+							sender.Reply(fmt.Sprintf(msg))
+							(&JdCookie{}).Push(msg)
+							logs.Info(msg)
 						}
 					}
 					go func() {
