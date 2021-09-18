@@ -425,6 +425,7 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 			req.Body(body)
 		}
 		if data, err := req.Bytes(); err == nil {
+			logs.Info(err)
 			code, _ := jsonparser.GetInt(data, "code")
 			if code == 200 {
 				return data, nil
@@ -442,6 +443,7 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 
 func GetQlVersion(address string) (string, error) {
 	data, err := httplib.Get(address).String()
+	logs.Info(err)
 	if err != nil {
 		return "", err
 	}
@@ -451,6 +453,7 @@ func GetQlVersion(address string) (string, error) {
 		return "", errors.New("好像不是青龙面板")
 	}
 	data, err = httplib.Get(address + js).String()
+	logs.Info(err)
 	if err != nil {
 		return "", err
 	}
