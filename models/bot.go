@@ -190,7 +190,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								}
 								sender.Reply(fmt.Sprintf(msg))
 								sender.Reply(ck.Query())
-								(&JdCookie{}).Push(msg)
+								//(&JdCookie{}).Push(msg)
 							}
 						}
 						go func() {
