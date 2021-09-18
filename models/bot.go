@@ -153,66 +153,62 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 		logs.Info(ss)
 		if len(ss) > 0 {
-			xyb := 0
 
+			xyb := 0
 			for _, s := range ss {
 				pinkey := "pin=" + s[1] + ";wskey=" + s[2] + ";"
 				logs.Info(pinkey)
 				rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 				logs.Info(rsp)
-				if strings.Contains(rsp, "错误") {
-					logs.Error("wskey错误")
-					sender.Reply(fmt.Sprintf("wskey错误"))
-				} else {
-					ptKey := FetchJdCookieValue("pt_key", rsp)
-					ptPin := FetchJdCookieValue("pt_pin", rsp)
-					ck := JdCookie{
-						PtPin: ptPin,
-						PtKey: ptKey,
-						WsKey: s[2],
+
+				ptKey := FetchJdCookieValue("pt_key", rsp)
+				ptPin := FetchJdCookieValue("pt_pin", rsp)
+				ck := JdCookie{
+					PtPin: ptPin,
+					PtKey: ptKey,
+					WsKey: s[2],
+				}
+				if CookieOK(&ck) {
+					xyb++
+					if sender.IsQQ() {
+						ck.QQ = sender.UserID
+					} else if sender.IsTG() {
+						ck.Telegram = sender.UserID
 					}
-					if CookieOK(&ck) {
-						xyb++
-						if sender.IsQQ() {
-							ck.QQ = sender.UserID
-						} else if sender.IsTG() {
-							ck.Telegram = sender.UserID
-						}
-						if nck, err := GetJdCookie(ck.PtPin); err == nil {
-							nck.InPool(ck.PtKey)
-							if nck.WsKey == "" || len(nck.WsKey) == 0 {
-								if sender.IsQQ() {
-									ck.Update(QQ, ck.QQ)
-								}
-								nck.Update(WsKey, ck.WsKey)
-								msg := fmt.Sprintf("写入WsKey，并更新账号%s", ck.PtPin)
-								sender.Reply(fmt.Sprintf(msg))
-								(&JdCookie{}).Push(msg)
-								logs.Info(msg)
-							} else {
-								if nck.WsKey == ck.WsKey {
-									msg := fmt.Sprintf("重复wskey,更新ptkey")
-									sender.Reply(fmt.Sprintf(msg))
-									//(&JdCookie{}).Push(msg)
-									logs.Info(msg)
-								} else {
-									nck.Update(WsKey, ck.WsKey)
-									msg := fmt.Sprintf("更新WsKey，并更新账号%s", ck.PtPin)
-									sender.Reply(fmt.Sprintf(msg))
-									(&JdCookie{}).Push(msg)
-									logs.Info(msg)
-								}
-							}
-						} else {
-							NewJdCookie(&ck)
-							msg := fmt.Sprintf("添加账号成功，用户名：%s\n ptkey=%s", ck.PtPin, ck.PtKey)
+					if nck, err := GetJdCookie(ck.PtPin); err == nil {
+						nck.InPool(ck.PtKey)
+						if nck.WsKey == "" || len(nck.WsKey) == 0 {
 							if sender.IsQQ() {
 								ck.Update(QQ, ck.QQ)
 							}
+							nck.Update(WsKey, ck.WsKey)
+							msg := fmt.Sprintf("写入WsKey，并更新账号%s", ck.PtPin)
 							sender.Reply(fmt.Sprintf(msg))
-							sender.Reply(ck.Query())
+							(&JdCookie{}).Push(msg)
 							logs.Info(msg)
+						} else {
+							if nck.WsKey == ck.WsKey {
+								msg := fmt.Sprintf("重复wskey,更新ptkey")
+								sender.Reply(fmt.Sprintf(msg))
+								//(&JdCookie{}).Push(msg)
+								logs.Info(msg)
+							} else {
+								nck.Update(WsKey, ck.WsKey)
+								msg := fmt.Sprintf("更新WsKey，并更新账号%s", ck.PtPin)
+								sender.Reply(fmt.Sprintf(msg))
+								(&JdCookie{}).Push(msg)
+								logs.Info(msg)
+							}
 						}
+					} else {
+						NewJdCookie(&ck)
+						msg := fmt.Sprintf("添加账号成功，用户名：%s\n ptkey=%s", ck.PtPin, ck.PtKey)
+						if sender.IsQQ() {
+							ck.Update(QQ, ck.QQ)
+						}
+						sender.Reply(fmt.Sprintf(msg))
+						sender.Reply(ck.Query())
+						logs.Info(msg)
 					}
 				}
 				go func() {
