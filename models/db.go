@@ -314,10 +314,11 @@ func updateCookie() {
 	cks := GetJdCookies()
 	xya := 0
 	xyb := 0
+	r := rand.Intn(20)
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
 			xya++
-			time.Sleep(time.Duration(rand.Intn(20)) * time.Second)
+			time.Sleep(time.Duration(r) * time.Second)
 			logs.Info(time.Sleep)
 			ck := cks[i]
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
