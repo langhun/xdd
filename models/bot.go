@@ -149,6 +149,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 		}
 		if strings.Contains(msg, "wskey=") {
+			time.Sleep(10 * time.Second)
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, msg), &Sender{})
 			if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
 				logs.Error("wskey转换错误")
