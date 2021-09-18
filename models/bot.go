@@ -209,11 +209,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									sender.Reply(ck.Query())
 									logs.Info(msg)
 								}
+							} else {
+								msg := fmt.Sprintf("失效ck，请重来...%s", ck.PtPin)
+								sender.Reply(fmt.Sprintf(msg))
+								(&JdCookie{}).Push(msg)
+								logs.Info(msg)
 							}
-							msg := fmt.Sprintf("失效ck，请重来...%s", ck.PtPin)
-							sender.Reply(fmt.Sprintf(msg))
-							(&JdCookie{}).Push(msg)
-							logs.Info(msg)
 						}
 					}
 					go func() {
