@@ -51,12 +51,14 @@ func initContainer() {
 		Config.Containers[i].Type = ""
 		if Config.Containers[i].Address != "" {
 			vv := regexp.MustCompile(`^(https?://[\.\w]+:?\d*)`).FindStringSubmatch(Config.Containers[i].Address)
+			logs.Info(vv)
 			if len(vv) == 2 {
 				Config.Containers[i].Address = vv[1]
 			} else {
 				logs.Warn("%s地址错误", Config.Containers[i].Type)
 			}
 			version, err := GetQlVersion(Config.Containers[i].Address)
+			logs.Info(err)
 			logs.Info(version)
 			if err == nil {
 				if Config.Containers[i].getToken() == nil {
@@ -352,9 +354,7 @@ func (c *Container) read() error {
 }
 
 func (c *Container) getToken() error {
-	version, err := GetQlVersion(c.Address)
-	logs.Debug(err)
-	if version == "2.9" {
+	if c.Version == "2.9" {
 		req := httplib.Get(c.Address + fmt.Sprintf("/open/auth/token?client_id=%s&client_secret=%s", c.ClientID, c.Secret))
 		logs.Info(req)
 		logs.Info(c.Token)
