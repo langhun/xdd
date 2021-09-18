@@ -446,6 +446,7 @@ func GetQlVersion(address string) (string, error) {
 		return "", err
 	}
 	js := regexp.MustCompile(`/umi\.\w+\.js`).FindString(data)
+	logs.Info(js)
 	if js == "" {
 		return "", errors.New("好像不是青龙面板")
 	}
