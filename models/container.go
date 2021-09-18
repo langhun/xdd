@@ -54,6 +54,7 @@ func initContainer() {
 			logs.Info(vv)
 			if len(vv) == 2 {
 				Config.Containers[i].Address = vv[1]
+				logs.Info(vv[1])
 			} else {
 				logs.Warn("%s地址错误", Config.Containers[i].Type)
 			}
