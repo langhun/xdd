@@ -57,6 +57,7 @@ func initContainer() {
 				logs.Warn("%s地址错误", Config.Containers[i].Type)
 			}
 			version, err := GetQlVersion(Config.Containers[i].Address)
+			logs.Info(version)
 			if err == nil {
 				if Config.Containers[i].getToken() == nil {
 					logs.Info("青龙" + version + "登录成功")
