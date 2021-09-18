@@ -59,8 +59,6 @@ func initContainer() {
 				logs.Warn("%s地址错误", Config.Containers[i].Type)
 			}
 			version, err := GetQlVersion(Config.Containers[i].Address)
-			logs.Info(err)
-			logs.Info(version)
 			if err == nil {
 				if Config.Containers[i].getToken() == nil {
 					logs.Info("青龙" + version + "登录成功")
@@ -446,17 +444,14 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 
 func GetQlVersion(address string) (string, error) {
 	data, err := httplib.Get(address).String()
-	logs.Info(data)
 	if err != nil {
 		return "", err
 	}
 	js := regexp.MustCompile(`/umi\.\w+\.js`).FindString(data)
-	logs.Info(js)
 	if js == "" {
 		return "", errors.New("好像不是青龙面板")
 	}
 	data, err = httplib.Get(address + js).String()
-	logs.Info(data)
 	if err != nil {
 		return "", err
 	}
@@ -466,8 +461,6 @@ func GetQlVersion(address string) (string, error) {
 	} else if strings.Contains(data, "v2.2") {
 		v = "2.2"
 	} else if strings.Contains(data, "v2.9") {
-		v = "2.9"
-	} else if strings.Contains(data, "v3.5") {
 		v = "2.9"
 	}
 	return v, nil
