@@ -93,46 +93,6 @@ func (sender *Sender) handleJdCookies(handle func(ck *JdCookie)) error {
 	return nil
 }
 
-func (sender *Sender) handLeUpdateCookie() error {
-	cks := GetJdCookies()
-	a := sender.JoinContens()
-	if !sender.IsAdmin {
-		sender.Reply("你没有权限操作")
-	} else if a == "" {
-		sender.Reply("参数错误")
-	} else {
-		cks = LimitJdCookie(cks, a)
-		if len(cks) == 0 {
-			sender.Reply("没有匹配的账号")
-			return errors.New("没有匹配的账号")
-		} else {
-			for i := range cks {
-				eachCk := cks[i]
-				if eachCk.WsKey == "" {
-					sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未提交wskey", eachCk.PtPin))
-				} else {
-					res := simpleCmd(fmt.Sprintf(`python3 wspt.py "pin=%s;wskey=%s;"`, eachCk.PtPin, eachCk.WsKey))
-					sender.Reply("获取到wskey，开始更新...")
-					ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+);`).FindStringSubmatch(res)
-					if ss != nil {
-						tmpCk := JdCookie{PtKey: ss[1], PtPin: eachCk.PtPin}
-						if CookieOK(&tmpCk) {
-							newCK, _ := GetJdCookie(eachCk.PtPin)
-							newCK.InPool(tmpCk.PtKey)
-							sender.Reply(fmt.Sprintf("更新账号成功：%s\nptpin=%s\npt_key=%s", eachCk.Nickname, eachCk.PtPin, tmpCk.PtKey))
-						} else {
-							sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,获取到的ck无效\nwskey过期了？？？", eachCk.PtPin))
-						}
-					} else {
-						sender.Reply(fmt.Sprintf("!!!更新失败!!!\n账号:%s,未获取到 pt_key,执行结果为:%s", eachCk.PtPin, res))
-					}
-				}
-			}
-		}
-	}
-	return nil
-}
-
 var codeSignals = []CodeSignal{
 	{
 		Command: []string{"status", "状态"},
@@ -300,7 +260,33 @@ var codeSignals = []CodeSignal{
 		Command: []string{"更新账号"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
-			sender.handLeUpdateCookie()
+			sender.handleJdCookies(func(ck *JdCookie) {
+				if len(ck.WsKey) > 0 {
+					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
+					rsp := cmd(fmt.Sprintf(`python3 test.py "%s"`, pinkey), &Sender{})
+					if len(rsp) > 0 {
+						ptKey := FetchJdCookieValue("pt_key", rsp)
+						ptPin := FetchJdCookieValue("pt_pin", rsp)
+						ck := JdCookie{
+							PtKey: ptKey,
+							PtPin: ptPin,
+						}
+						if nck, err := GetJdCookie(ck.PtPin); err == nil {
+							nck.InPool(ck.PtKey)
+							msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+							sender.Reply(msg)
+							logs.Info(msg)
+						} else {
+							sender.Reply("转换失败")
+						}
+					} else {
+						sender.Reply(fmt.Sprintf("Wskey失效，%s", ck.Nickname))
+					}
+				} else {
+					sender.Reply(fmt.Sprintf("Wskey为空，%s", ck.Nickname))
+				}
+
+			})
 			return nil
 		},
 	},
