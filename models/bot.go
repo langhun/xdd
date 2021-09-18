@@ -154,6 +154,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				for _, s := range ss {
 					wskey := "pin=" + s[1] + ";wskey=" + s[2] + ";"
 					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, wskey), &Sender{})
+					logs.Info(rsp)
 					if strings.Contains(rsp, "错误") {
 						logs.Error("wskey错误")
 						sender.Reply(fmt.Sprintf("wskey错误"))
