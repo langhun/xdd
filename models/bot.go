@@ -153,6 +153,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		logs.Info(ss)
 		if len(ss) > 0 {
 			for _, s := range ss {
+				logs.Info(ss)
 				pinkey := "pin=" + s[1] + ";wskey=" + s[2] + ";"
 				rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 				logs.Info(rsp)
