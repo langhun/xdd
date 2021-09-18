@@ -320,7 +320,7 @@ func updateCookie() {
 			time.Sleep(time.Second * time.Duration(rand.Intn(20)))
 			ck := cks[i]
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-			rsp := cmd(fmt.Sprintf(`python3 test.py "%s"`, pinkey), &Sender{})
+			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 			if strings.Contains(rsp, "错误") {
 				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
 			} else {

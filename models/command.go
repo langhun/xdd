@@ -263,7 +263,7 @@ var codeSignals = []CodeSignal{
 			sender.handleJdCookies(func(ck *JdCookie) {
 				if len(ck.WsKey) > 0 {
 					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-					rsp := cmd(fmt.Sprintf(`python3 test.py "%s"`, pinkey), &Sender{})
+					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 					if len(rsp) > 0 {
 						ptKey := FetchJdCookieValue("pt_key", rsp)
 						ptPin := FetchJdCookieValue("pt_pin", rsp)
