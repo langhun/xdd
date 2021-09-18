@@ -393,9 +393,9 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 	for _, s := range ss {
 		if s == GET || s == POST || s == PUT || s == DELETE {
 			method = s
-		} else if strings.Contains(s, "/api/") {
-			if c.Version == "2.9" {
-				api = strings.Replace(s, "api", "open", 1)
+		} else if strings.Contains(s, "/open/") {
+			if c.Version == "2.8" {
+				api = strings.ReplaceAll(s, "open", "api")
 			} else {
 				api = s
 			}
