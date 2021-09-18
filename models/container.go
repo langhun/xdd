@@ -395,7 +395,7 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 			method = s
 		} else if strings.Contains(s, "/api/") {
 			if c.Version == "2.9" {
-				api = strings.Replace(s, "api", "open", 1)
+				api = strings.ReplaceAll(s, "api", "open")
 			} else {
 				api = s
 			}
