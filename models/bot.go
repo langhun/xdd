@@ -148,81 +148,72 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return nil
 			}
 		}
-		{
-			ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
-			if len(ss) > 0 {
-				time.Sleep(10 * time.Second)
-				for _, s := range ss {
-					wkey := "pin=" + s[1] + ";wskey=" + s[2] + ";"
-					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, wkey), &Sender{})
-					if strings.Contains(rsp, "错误") {
-						logs.Error("wskey错误")
-						sender.Reply(fmt.Sprintf("wskey错误"))
-					} else {
-						ptKey := FetchJdCookieValue("pt_key", rsp)
-						ptPin := FetchJdCookieValue("pt_pin", rsp)
-						ck := JdCookie{
-							PtPin: ptPin,
-							PtKey: ptKey,
-							WsKey: s[2],
-						}
-						if CookieOK(&ck) {
-
-							if sender.IsQQ() {
-								ck.QQ = sender.UserID
-							} else if sender.IsTG() {
-								ck.Telegram = sender.UserID
+		if strings.Contains(msg, "wskey=") {
+			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, msg), &Sender{})
+			if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
+				logs.Error("wskey转换错误")
+				sender.Reply(fmt.Sprintf("wskey转换错误"))
+			} else {
+				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
+				ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
+				if len(ss1) > 0 {
+					for _, s := range ss {
+						for _, s1 := range ss1 {
+							ck := JdCookie{
+								PtPin: s[2],
+								PtKey: s[1],
+								WsKey: s1[2],
 							}
-							if nck, err := GetJdCookie(ck.PtPin); err == nil {
-								nck.InPool(ck.PtKey)
-								nck.Update(PtKey, ck.PtKey)
-
-								if nck.WsKey == "" || len(nck.WsKey) == 0 {
-									if sender.IsQQ() {
-										ck.Update(QQ, ck.QQ)
-									}
-									nck.Update(WsKey, ck.WsKey)
-									msg := fmt.Sprintf("写入WsKey，并更新账号%s", ck.PtPin)
-									sender.Reply(fmt.Sprintf(msg))
-									(&JdCookie{}).Push(msg)
-									logs.Info(msg)
-								} else {
-									if nck.WsKey == ck.WsKey {
-										msg := fmt.Sprintf("重复写入")
+							if CookieOK(&ck) {
+								if sender.IsQQ() {
+									ck.QQ = sender.UserID
+								} else if sender.IsTG() {
+									ck.Telegram = sender.UserID
+								}
+								if nck, err := GetJdCookie(ck.PtPin); err == nil {
+									nck.InPool(ck.PtKey)
+									if nck.WsKey == "" || len(nck.WsKey) == 0 {
+										if sender.IsQQ() {
+											ck.Update(QQ, ck.QQ)
+										}
+										nck.Update(WsKey, ck.WsKey)
+										msg := fmt.Sprintf("写入WsKey，并更新账号%s", ck.PtPin)
 										sender.Reply(fmt.Sprintf(msg))
 										(&JdCookie{}).Push(msg)
 										logs.Info(msg)
 									} else {
-										nck.Updates(JdCookie{
-											WsKey: ck.WsKey,
-										})
-										msg := fmt.Sprintf("更新WsKey，并更新账号%s", ck.PtPin)
-										sender.Reply(fmt.Sprintf(msg))
-										(&JdCookie{}).Push(msg)
-										logs.Info(msg)
+										if nck.WsKey == ck.WsKey {
+											msg := fmt.Sprintf("重复wskey,更新ptkey")
+											sender.Reply(fmt.Sprintf(msg))
+											//(&JdCookie{}).Push(msg)
+											logs.Info(msg)
+										} else {
+											nck.Update(WsKey, ck.WsKey)
+											msg := fmt.Sprintf("更新WsKey，并更新账号%s", ck.PtPin)
+											sender.Reply(fmt.Sprintf(msg))
+											(&JdCookie{}).Push(msg)
+											logs.Info(msg)
+										}
 									}
+								} else {
+									NewJdCookie(&ck)
+									msg := fmt.Sprintf("添加账号成功，用户名：%s\n ptkey=%s", ck.PtPin, ck.PtKey)
+									if sender.IsQQ() {
+										ck.Update(QQ, ck.QQ)
+									}
+									sender.Reply(fmt.Sprintf(msg))
+									sender.Reply(ck.Query())
+									logs.Info(msg)
 								}
-
-							} else {
-								NewJdCookie(&ck)
-
-								msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
-
-								if sender.IsQQ() {
-									ck.Update(QQ, ck.QQ)
-								}
-
-								sender.Reply(fmt.Sprintf(msg))
-								sender.Reply(ck.Query())
-								(&JdCookie{}).Push(msg)
 							}
+							sender.Reply(fmt.Sprintf("失效ck：%s", ck.PtPin))
 						}
-						go func() {
-							Save <- &JdCookie{}
-						}()
-						return nil
 					}
 				}
+				go func() {
+					Save <- &JdCookie{}
+				}()
+				return nil
 			}
 		}
 		{
