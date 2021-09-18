@@ -153,7 +153,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 
 			ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 			logs.Info(ss1)
-			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, msg), &Sender{})
+			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, ss1), &Sender{})
 			logs.Info(rsp)
 
 			if strings.Contains(rsp, "错误") {
