@@ -189,7 +189,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 										if nck.WsKey == ck.WsKey {
 											msg := fmt.Sprintf("重复wskey,更新ptkey")
 											sender.Reply(fmt.Sprintf(msg))
-											//(&JdCookie{}).Push(msg)
+											(&JdCookie{}).Push(msg)
 											logs.Info(msg)
 										} else {
 											nck.Update(WsKey, ck.WsKey)
@@ -210,7 +210,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									logs.Info(msg)
 								}
 							}
-							msg := fmt.Sprintf("失效ck%s", ck.PtPin)
+							msg := fmt.Sprintf("失效ck，请重来...%s", ck.PtPin)
 							sender.Reply(fmt.Sprintf(msg))
 							(&JdCookie{}).Push(msg)
 							logs.Info(msg)
