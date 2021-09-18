@@ -277,13 +277,13 @@ var codeSignals = []CodeSignal{
 							sender.Reply(msg)
 							logs.Info(msg)
 						} else {
-							sender.Reply("转换失败")
+							sender.Reply(fmt.Sprintf("转换失败，%s", ck.PtPin))
 						}
 					} else {
-						sender.Reply(fmt.Sprintf("Wskey失效，%s", ck.Nickname))
+						sender.Reply(fmt.Sprintf("wskey失效了？%s", ck.Nickname))
 					}
 				} else {
-					sender.Reply(fmt.Sprintf("Wskey为空，%s", ck.Nickname))
+					sender.Reply(fmt.Sprintf("没找到wskey，%s", ck.Nickname))
 				}
 
 			})
