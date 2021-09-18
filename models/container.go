@@ -431,8 +431,8 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 		}
 		if data, err := req.Bytes(); err == nil {
 			logs.Info(err)
-			logs.Info(data)
 			code, _ := jsonparser.GetInt(data, "code")
+			logs.Info(code)
 			if code == 200 {
 				return data, nil
 			} else {
