@@ -148,6 +148,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				return nil
 			}
 		}
+		//wskey
 		if strings.Contains(msg, "wskey=") {
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, msg), &Sender{})
 			logs.Info(rsp)
@@ -155,17 +156,17 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				logs.Error("wskey转换错误")
 				sender.Reply(fmt.Sprintf("wskey转换错误"))
 			} else {
-				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
-				logs.Info(ss)
 				ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 				logs.Info(ss1)
+				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
+				logs.Info(ss)
 				if len(ss1) > 0 {
-					for _, s := range ss {
-						for _, s1 := range ss1 {
+					for _, s := range ss1 {
+						for _, s1 := range ss {
 							ck := JdCookie{
-								PtPin: s[2],
-								PtKey: s[1],
-								WsKey: s1[2],
+								PtPin: s1[2],
+								PtKey: s1[1],
+								WsKey: s[2],
 							}
 							if CookieOK(&ck) {
 								if sender.IsQQ() {
@@ -176,10 +177,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								if nck, err := GetJdCookie(ck.PtPin); err == nil {
 									nck.InPool(ck.PtKey)
 									if nck.WsKey == "" || len(nck.WsKey) == 0 {
+										nck.Updates(JdCookie{
+											WsKey: ck.WsKey,
+										})
 										if sender.IsQQ() {
 											ck.Update(QQ, ck.QQ)
 										}
-										nck.Update(WsKey, ck.WsKey)
+										nck.Update(PtKey, ck.PtKey)
 										msg := fmt.Sprintf("写入WsKey，并更新账号%s", ck.PtPin)
 										sender.Reply(fmt.Sprintf(msg))
 										(&JdCookie{}).Push(msg)
@@ -187,11 +191,16 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									} else {
 										if nck.WsKey == ck.WsKey {
 											msg := fmt.Sprintf("重复wskey,更新ptkey")
+											nck.Updates(JdCookie{
+												PtKey: ck.PtKey,
+											})
 											sender.Reply(fmt.Sprintf(msg))
 											//(&JdCookie{}).Push(msg)
 											logs.Info(msg)
 										} else {
-											nck.Update(WsKey, ck.WsKey)
+											nck.Updates(JdCookie{
+												WsKey: ck.WsKey,
+											})
 											msg := fmt.Sprintf("更新WsKey，并更新账号%s", ck.PtPin)
 											sender.Reply(fmt.Sprintf(msg))
 											(&JdCookie{}).Push(msg)
@@ -209,14 +218,15 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									logs.Info(msg)
 								}
 							}
-							sender.Reply(fmt.Sprintf("失效ck：%s", ck.PtPin))
 						}
 					}
+					go func() {
+						Save <- &JdCookie{}
+					}()
+					return nil
+
 				}
-				go func() {
-					Save <- &JdCookie{}
-				}()
-				return nil
+
 			}
 		}
 		{
