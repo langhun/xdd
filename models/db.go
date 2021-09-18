@@ -322,7 +322,7 @@ func updateCookie() {
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 			if strings.Contains(rsp, "错误") {
-				ck.Push(fmt.Sprintf("Wskey失效账号，%s", ck.PtPin))
+				ck.Push(fmt.Sprintf("Wskey失效账号:%s", ck.PtPin))
 			} else {
 				ptKey := FetchJdCookieValue("pt_key", rsp)
 				ptPin := FetchJdCookieValue("pt_pin", rsp)
@@ -337,12 +337,12 @@ func updateCookie() {
 					} else {
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
 							nck.InPool(ck.PtKey)
-							msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+							msg := fmt.Sprintf("更新账号:%s", ck.PtPin)
 							//(&JdCookie{}).Push(msg)
 							logs.Info(msg)
 						} else {
 							NewJdCookie(&ck)
-							msg := fmt.Sprintf("添加账号，账号名:%s", ck.PtPin)
+							msg := fmt.Sprintf("添加账号成功:%s", ck.PtPin)
 							logs.Info(msg)
 						}
 					}

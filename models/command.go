@@ -273,17 +273,17 @@ var codeSignals = []CodeSignal{
 						}
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
 							nck.InPool(ck.PtKey)
-							msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
+							msg := fmt.Sprintf("更新账号：%s", ck.PtPin)
 							sender.Reply(msg)
 							logs.Info(msg)
 						} else {
-							sender.Reply(fmt.Sprintf("转换失败，%s", ck.PtPin))
+							sender.Reply(fmt.Sprintf("转换失败：%s", ck.PtPin))
 						}
 					} else {
 						sender.Reply(fmt.Sprintf("wskey失效了？%s", ck.Nickname))
 					}
 				} else {
-					sender.Reply(fmt.Sprintf("没找到wskey，%s", ck.Nickname))
+					sender.Reply(fmt.Sprintf("没找到wskey：%s", ck.Nickname))
 				}
 
 			})
