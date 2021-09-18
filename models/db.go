@@ -350,12 +350,7 @@ func updateCookie() {
 					(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
 				}
 			}
-		} else {
-			//(&JdCookie{}).Push(fmt.Sprintf("转换失败，请重新转换，%s", ck.PtPin))
 		}
-		go func() {
-			Save <- &JdCookie{}
-		}()
 	}
 	(&JdCookie{}).Push(fmt.Sprintf("所有wskey转换完成，共%d个，成功%d个。", xya, xyb))
 }

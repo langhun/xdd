@@ -151,6 +151,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		{
 			ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 			if len(ss) > 0 {
+				time.Sleep(10 * time.Second)
 				for _, s := range ss {
 					wkey := "pin=" + s[1] + ";wskey=" + s[2] + ";"
 					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, wkey), &Sender{})
