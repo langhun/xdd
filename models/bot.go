@@ -262,12 +262,3 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	}
 	return nil
 }
-
-func FetchJdCookieValue(key string, cookies string) string {
-	match := regexp.MustCompile(key + `=([^;]*);{0,1}`).FindStringSubmatch(cookies)
-	if len(match) == 2 {
-		return match[1]
-	} else {
-		return ""
-	}
-}
