@@ -320,6 +320,7 @@ func updateCookie() {
 			ck := cks[i]
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+			logs.Info(rsp)
 			if strings.Contains(rsp, "错误") {
 				ck.Push(fmt.Sprintf("Wskey失效账号:%s", ck.PtPin))
 			} else {
@@ -332,7 +333,7 @@ func updateCookie() {
 				if CookieOK(&ck) {
 					xyb++
 					if HasKey(ck.PtKey) {
-						(&JdCookie{}).Push(fmt.Sprintf("重复提交"))
+						//(&JdCookie{}).Push(fmt.Sprintf("重复提交"))
 					} else {
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
 							nck.InPool(ck.PtKey)
