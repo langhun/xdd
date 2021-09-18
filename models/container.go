@@ -443,17 +443,14 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 
 func GetQlVersion(address string) (string, error) {
 	data, err := httplib.Get(address).String()
-	logs.Info(err)
 	if err != nil {
 		return "", err
 	}
 	js := regexp.MustCompile(`/umi\.\w+\.js`).FindString(data)
-	logs.Info(js)
 	if js == "" {
 		return "", errors.New("好像不是青龙面板")
 	}
 	data, err = httplib.Get(address + js).String()
-	logs.Info(err)
 	if err != nil {
 		return "", err
 	}
@@ -465,7 +462,6 @@ func GetQlVersion(address string) (string, error) {
 	} else if strings.Contains(data, "v2.2") {
 		v = "2.2"
 	}
-	logs.Info(v)
 	return v, nil
 }
 
