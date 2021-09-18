@@ -317,7 +317,7 @@ func updateCookie() {
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
 			xya++
-			time.Sleep(time.Second * time.Duration(rand.Intn(20)))
+			time.Sleep(time.Duration(rand.Intn(20)) * time.Second)
 			logs.Info(time.Sleep)
 			ck := cks[i]
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
