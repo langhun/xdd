@@ -360,10 +360,10 @@ func (c *Container) getToken() error {
 				return err
 			}
 			c.Token, _ = jsonparser.GetString(data, "token")
-			//logs.Info(c.Token)
+			logs.Info(c.Token)
 			if c.Token == "" {
 				c.Token, _ = jsonparser.GetString(data, "data", "token")
-				//logs.Info(c.Token)
+				logs.Info(c.Token)
 			}
 		} else {
 			return err
