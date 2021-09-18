@@ -153,6 +153,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 		logs.Info(ss)
 		if len(ss) > 0 {
+			xyb := 0
+
 			for _, s := range ss {
 				pinkey := "pin=" + s[1] + ";wskey=" + s[2] + ";"
 				logs.Info(pinkey)
@@ -170,6 +172,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						WsKey: s[2],
 					}
 					if CookieOK(&ck) {
+						xyb++
 						if sender.IsQQ() {
 							ck.QQ = sender.UserID
 						} else if sender.IsTG() {
