@@ -409,19 +409,14 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 		switch method {
 		case POST:
 			req = httplib.Post(c.Address + api)
-			logs.Debug(req)
 		case PUT:
 			req = httplib.Put(c.Address + api)
-			logs.Debug(req)
 		case DELETE:
 			req = httplib.Delete(c.Address + api)
-			logs.Debug(req)
 		default:
 			req = httplib.Get(c.Address + api)
-			logs.Debug(req)
 		}
 		req.Header("Authorization", "Bearer "+c.Token)
-		logs.Debug(req)
 		if body != "" {
 			req.Header("Content-Type", "application/json;charset=UTF-8")
 			req.Body(body)
