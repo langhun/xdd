@@ -353,6 +353,8 @@ func (c *Container) read() error {
 func (c *Container) getToken() error {
 	if c.Version == "2.9" {
 		req := httplib.Get(c.Address + fmt.Sprintf("/open/auth/token?client_id=%s&client_secret=%s", c.ClientID, c.Secret))
+		logs.Info(req)
+		logs.Info(c.Token)
 		req.Header("Content-Type", "application/json;charset=UTF-8")
 		if rsp, err := req.Response(); err == nil {
 			data, err := ioutil.ReadAll(rsp.Body)
