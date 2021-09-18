@@ -462,6 +462,7 @@ func GetQlVersion(address string) (string, error) {
 	} else if strings.Contains(data, "v2.2") {
 		v = "2.2"
 	}
+	logs.Info(v)
 	return v, nil
 }
 
