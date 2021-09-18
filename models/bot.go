@@ -103,11 +103,12 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		{ //ptkey
 			ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
-
+			logs.Info(ss)
 			if len(ss) > 0 {
 
 				xyb := 0
 				for _, s := range ss {
+					logs.Info(s[1], s[2])
 					ck := JdCookie{
 						PtKey: s[1],
 						PtPin: s[2],
