@@ -412,20 +412,26 @@ func (c *Container) request(ss ...string) ([]byte, error) {
 		switch method {
 		case POST:
 			req = httplib.Post(c.Address + api)
+			logs.Info(req)
 		case PUT:
 			req = httplib.Put(c.Address + api)
+			logs.Info(req)
 		case DELETE:
 			req = httplib.Delete(c.Address + api)
+			logs.Info(req)
 		default:
 			req = httplib.Get(c.Address + api)
+			logs.Info(req)
 		}
 		req.Header("Authorization", "Bearer "+c.Token)
+		logs.Info(req)
 		if body != "" {
 			req.Header("Content-Type", "application/json;charset=UTF-8")
 			req.Body(body)
 		}
 		if data, err := req.Bytes(); err == nil {
 			logs.Info(err)
+			logs.Info(data)
 			code, _ := jsonparser.GetInt(data, "code")
 			if code == 200 {
 				return data, nil
