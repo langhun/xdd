@@ -149,14 +149,16 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			}
 		}
 		if strings.Contains(msg, "wskey=") {
-			time.Sleep(10 * time.Second)
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, msg), &Sender{})
+			logs.Info(rsp)
 			if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
 				logs.Error("wskey转换错误")
 				sender.Reply(fmt.Sprintf("wskey转换错误"))
 			} else {
 				ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(rsp, -1)
+				logs.Info(ss)
 				ss1 := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
+				logs.Info(ss1)
 				if len(ss1) > 0 {
 					for _, s := range ss {
 						for _, s1 := range ss1 {
