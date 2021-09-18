@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"github.com/beego/beego/v2/core/logs"
-	"math/rand"
 	"regexp"
 	"strings"
 	"time"
@@ -314,12 +313,10 @@ func updateCookie() {
 	cks := GetJdCookies()
 	xya := 0
 	xyb := 0
-	r := rand.Intn(20)
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
 			xya++
-			time.Sleep(time.Duration(r) * time.Second)
-			logs.Info(time.Sleep)
+			time.Sleep(10 * time.Second)
 			ck := cks[i]
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
