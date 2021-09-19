@@ -195,7 +195,6 @@ func CookieOK(ck *JdCookie) bool {
 							}
 						} else {
 							msg := fmt.Sprintf("转换失败,请重新尝试...pin=%s", ck.PtPin)
-							//sender.Reply(fmt.Sprintf(msg))
 							(&JdCookie{}).Push(msg)
 							logs.Info(msg)
 						}
