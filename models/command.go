@@ -185,7 +185,7 @@ var codeSignals = []CodeSignal{
 			if err := Update(sender); err != nil {
 				return err.Error()
 			}
-			sender.Reply("小弟弟重启程序")
+			sender.Reply("小弟弟重启程序🤷‍♂️")
 			Daemon()
 			return nil
 		},
@@ -194,7 +194,7 @@ var codeSignals = []CodeSignal{
 		Command: []string{"重启", "reload", "restart", "reboot"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
-			sender.Reply("小弟弟重启程序")
+			sender.Reply("小弟弟重启程序🤷‍♂️")
 			Daemon()
 			return nil
 		},

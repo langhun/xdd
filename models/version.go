@@ -28,7 +28,7 @@ func initVersion() {
 	logs.Info("检查更新" + version)
 	value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/langhun/xdd/x/models/version.go").String()
 	if err != nil {
-		logs.Info("更新版本的失败")
+		logs.Info("更新版本的失败🤣")
 	} else {
 		// name := AppName + "_" + runtime.GOOS + "_" + runtime.GOARCH
 		if match := regexp.MustCompile(`var version = "(\d{10})"`).FindStringSubmatch(value); len(match) != 0 {
@@ -39,10 +39,10 @@ func initVersion() {
 			if match[1] > version {
 				err := Update(&Sender{})
 				if err != nil {
-					logs.Warn("更新失败,", err)
+					logs.Warn("更新失败😭", err)
 					return
 				}
-				(&JdCookie{}).Push("小弟弟更新：" + describe)
+				(&JdCookie{}).Push("小弟弟有更新了呢~😍：" + describe)
 				Daemon()
 			}
 		}
@@ -50,27 +50,27 @@ func initVersion() {
 }
 
 func Update(sender *Sender) error {
-	sender.Reply("小弟弟开始拉取代码")
+	sender.Reply("小弟弟要开始拉取更新代码了😊。")
 	rtn, err := exec.Command("sh", "-c", "cd "+ExecPath+" && git stash && git pull").Output()
 	if err != nil {
-		return errors.New("小弟弟拉取代失败：" + err.Error())
+		return errors.New("怎么回事？小弟弟拉取代失败了😭" + err.Error())
 	}
 	t := string(rtn)
 	if !strings.Contains(t, "changed") {
 		if strings.Contains(t, "Already") || strings.Contains(t, "已经是最新") {
-			return errors.New("小弟弟已是最新版啦")
+			return errors.New("小弟弟已是最新版啦👌")
 		} else {
-			return errors.New("小弟弟拉取代失败：" + t)
+			return errors.New("小弟弟拉取代失败😒" + t)
 		}
 	} else {
-		sender.Reply("小弟弟拉取代码成功")
+		sender.Reply("小弟弟拉取代码成功拉~😋")
 	}
-	sender.Reply("小弟弟正在编译程序")
+	sender.Reply("小弟弟正在努力加工中💪...")
 	rtn, err = exec.Command("sh", "-c", "cd "+ExecPath+" && go build -o "+pname).Output()
 	if err != nil {
 		return errors.New("小弟弟编译失败：" + err.Error())
 	} else {
-		sender.Reply("小弟弟编译成功")
+		sender.Reply("小弟弟要准备起来了😎")
 	}
 	return nil
 }
