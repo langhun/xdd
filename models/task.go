@@ -66,6 +66,7 @@ func runTask(task *Task, sender *Sender) string {
 		}
 		task.Name = slice[len-1]
 		path = ExecPath + "/scripts/" + task.Name
+		logs.Info(fmt.Sprintf("path%s", path))
 		if strings.Contains(task.Path, "http") {
 			f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777)
 			if err != nil {
@@ -118,6 +119,7 @@ func runTask(task *Task, sender *Sender) string {
 	cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", "pins", pins))
 	for _, env := range task.Envs {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", env.Name, env.Value))
+		logs.Info(cmd.Env)
 	}
 	stdout, err := cmd.StdoutPipe()
 	stderr, err := cmd.StderrPipe()
