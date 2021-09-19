@@ -275,25 +275,25 @@ var codeSignals = []CodeSignal{
 						if CookieOK(&ck) {
 							if nck, err := GetJdCookie(ck.PtPin); err == nil {
 								nck.InPool(ck.PtKey)
-								msg := fmt.Sprintf("更新账号:%s", ck.PtPin)
+								msg := fmt.Sprintf("更新账号成功:%s", ck.PtPin)
 								sender.Reply(fmt.Sprintf(msg))
 								//(&JdCookie{}).Push(msg)
 								logs.Info(msg)
 							}
 						} else {
-							msg := fmt.Sprintf("无效ptkey，%s", ck.PtPin)
+							msg := fmt.Sprintf("无效ptkey:%s", ck.PtPin)
 							sender.Reply(fmt.Sprintf(msg))
 							//(&JdCookie{}).Push(msg)
 							logs.Info(msg)
 						}
 					} else {
-						msg := fmt.Sprintf("转换失败,pin=%s\n%s", ck.PtPin, rsp)
+						msg := fmt.Sprintf("转换失败:pin=%s\n%s", ck.PtPin, rsp)
 						sender.Reply(fmt.Sprintf(msg))
 						//(&JdCookie{}).Push(msg)
 						logs.Info(msg)
 					}
 				} else {
-					msg := fmt.Sprintf("没找到wskey.%s", ck.PtPin)
+					msg := fmt.Sprintf("没找到wskey:%s", ck.PtPin)
 					sender.Reply(fmt.Sprintf(msg))
 					//(&JdCookie{}).Push(msg)
 					logs.Info(msg)
