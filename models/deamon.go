@@ -26,7 +26,7 @@ func Daemon() {
 	if err != nil {
 		panic(err)
 	}
-	logs.Info("小傻妞运行于后台模式")
+	logs.Info("小弟弟运行于后台模式")
 	os.Exit(0)
 }
 
