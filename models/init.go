@@ -29,7 +29,7 @@ func init() {
 	initCron()
 	go initTgBot()
 	InitReplies()
-	initTask()
+	//initTask()
 	initRepos()
 	initWSPT()
 }
