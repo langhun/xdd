@@ -292,7 +292,6 @@ func updateCookie() {
 		if len(cks[i].WsKey) > 0 {
 			xya++
 			ck := cks[i]
-			logs.Info(ck.WsKey)
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 			if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {

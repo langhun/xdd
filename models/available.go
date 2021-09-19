@@ -7,6 +7,7 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type UserInfoResult struct {
@@ -163,28 +164,44 @@ func CookieOK(ck *JdCookie) bool {
 
 		if ui.Msg == "not login" {
 			if ck.Available == True {
-				JdCookie{}.Push(fmt.Sprintf("失效账号，%s", ck.Nickname))
-				ck.Push(fmt.Sprintf("失效账号，%s", ck.PtPin))
+				JdCookie{}.Push(fmt.Sprintf("账号失效，%s", ck.Nickname))
+				ck.Push(fmt.Sprintf("账号失效，%s", ck.PtPin))
 				if len(ck.WsKey) > 0 {
-					JdCookie{}.Push(fmt.Sprintf("获取到wskey---n"))
+					JdCookie{}.Push(fmt.Sprintf("获取到wskey---"))
 					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 					JdCookie{}.Push(fmt.Sprintf("自动转换ptkey中---\n%s", rsp))
-					ptKey := FetchJdCookieValue("pt_key", rsp)
-					ptPin := FetchJdCookieValue("pt_pin", rsp)
-					ck := JdCookie{
-						PtKey: ptKey,
-						PtPin: ptPin,
-					}
-					if nck, err := GetJdCookie(ck.PtPin); err == nil {
-						nck.InPool(ck.PtKey)
-						msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
-						(&JdCookie{}).Push(msg)
-						logs.Info(msg)
+					if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
+						logs.Error("wskey错误")
+						(&JdCookie{}).Push(fmt.Sprintf("Wskey错误%s", ck.PtPin))
 					} else {
-						nck.Update(Available, false)
-						(&JdCookie{}).Push(fmt.Sprintf("转换失败：%s", ck.PtPin))
+						ptKey := FetchJdCookieValue("pt_key", rsp)
+						ptPin := FetchJdCookieValue("pt_pin", rsp)
+						if len(ptKey) > 0 {
+							ck := JdCookie{
+								PtKey: ptKey,
+								PtPin: ptPin,
+							}
+							if CookieOK(&ck) {
+								if nck, err := GetJdCookie(ck.PtPin); err == nil {
+									nck.InPool(ck.PtKey)
+									msg := fmt.Sprintf("更新账号:%s", ck.PtPin)
+									(&JdCookie{}).Push(msg)
+									logs.Info(msg)
+								}
+							} else {
+								msg := fmt.Sprintf("无效ptkey...%s", ck.PtPin)
+								(&JdCookie{}).Push(msg)
+								logs.Info(msg)
+							}
+						} else {
+							msg := fmt.Sprintf("转换失败,请重新尝试...pin=%s", ck.PtPin)
+							//sender.Reply(fmt.Sprintf(msg))
+							(&JdCookie{}).Push(msg)
+							logs.Info(msg)
+						}
 					}
+					time.Sleep(10 * time.Second)
 				}
 			}
 			return false
