@@ -7,7 +7,6 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	"net/url"
 	"strings"
-	"time"
 )
 
 type UserInfoResult struct {
@@ -201,7 +200,6 @@ func CookieOK(ck *JdCookie) bool {
 							logs.Info(msg)
 						}
 					}
-					time.Sleep(10 * time.Second)
 				}
 			}
 			return false
