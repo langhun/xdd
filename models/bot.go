@@ -197,7 +197,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									}
 									nck.Update(WsKey, ck.WsKey)
 									msg := fmt.Sprintf("写入WsKey，并更新账号%s", ck.PtPin)
-									sender.Reply(fmt.Sprintf(msg))
+									//sender.Reply(fmt.Sprintf(msg))
 									(&JdCookie{}).Push(msg)
 									logs.Info(msg)
 								} else {
@@ -209,7 +209,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 									} else {
 										nck.Update(WsKey, ck.WsKey)
 										msg := fmt.Sprintf("更新WsKey，并更新账号%s", ck.PtPin)
-										sender.Reply(fmt.Sprintf(msg))
+										//sender.Reply(fmt.Sprintf(msg))
 										(&JdCookie{}).Push(msg)
 										logs.Info(msg)
 									}
@@ -221,7 +221,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								if sender.IsQQ() {
 									ck.Update(QQ, ck.QQ)
 								}
-								sender.Reply(fmt.Sprintf(msg))
+								//sender.Reply(fmt.Sprintf(msg))
+								(&JdCookie{}).Push(msg)
 								sender.Reply(ck.Query())
 								logs.Info(msg)
 							}
@@ -229,8 +230,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					} else {
 						xyd++
 						msg := fmt.Sprintf("转换失败,pin=%s\nwskey失效了？%s", ptPin, rsp)
-						sender.Reply(fmt.Sprintf(msg))
-						//(&JdCookie{}).Push(msg)
+						//sender.Reply(fmt.Sprintf(msg))
+						(&JdCookie{}).Push(msg)
 						logs.Info(msg)
 					}
 				}

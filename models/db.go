@@ -320,7 +320,6 @@ func updateCookie() {
 					}
 				} else {
 					msg := fmt.Sprintf("转换失败,pin=%s\n%s", ck.PtPin, rsp)
-					//sender.Reply(fmt.Sprintf(msg))
 					//(&JdCookie{}).Push(msg)
 					logs.Info(msg)
 				}
