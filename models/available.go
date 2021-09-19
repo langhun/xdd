@@ -203,7 +203,6 @@ func CookieOK(ck *JdCookie) bool {
 					}
 				}
 			}
-			ck.Update(Available, false)
 			return false
 		}
 	case "0":
