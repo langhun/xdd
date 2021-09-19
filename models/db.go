@@ -317,7 +317,9 @@ func updateCookie() {
 							logs.Info(msg)
 						}
 					} else {
-						//(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
+						msg := fmt.Sprintf("无效ptkey，%s", ck.PtPin)
+						//(&JdCookie{}).Push(msg)
+						logs.Info(msg)
 					}
 				} else {
 					msg := fmt.Sprintf("转换失败,pin=%s", ck.PtPin)
