@@ -152,8 +152,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				go func() {
 					Save <- &JdCookie{}
 				}()
-				(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%s个，更新%s个，重复%s个，失败%s个", xya, xyb, xyc, xyd, xye))
 				return nil
+				(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%s个，更新%s个，重复%s个，失败%s个", xya, xyb, xyc, xyd, xye))
 			}
 		}
 		//wskey
@@ -228,7 +228,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						}
 					} else {
 						xyd++
-						msg := fmt.Sprintf("转换失败%s", PtPin)
+						msg := fmt.Sprintf("转换失败%s", ptPin)
 						sender.Reply(fmt.Sprintf(msg))
 						(&JdCookie{}).Push(msg)
 						logs.Info(msg)
@@ -239,8 +239,8 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			go func() {
 				Save <- &JdCookie{}
 			}()
-			(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%s个，重复%s个，失败%s个", xya, xyb, xyc, xyd))
 			return nil
+			(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%s个，重复%s个，失败%s个", xya, xyb, xyc, xyd))
 		}
 		{
 			o := findShareCode(msg)
