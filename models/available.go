@@ -165,8 +165,8 @@ func CookieOK(ck *JdCookie) bool {
 			if ck.Available == True {
 				JdCookie{}.Push(fmt.Sprintf("账号失效，%s", ck.Nickname))
 				ck.Push(fmt.Sprintf("账号失效，%s", ck.PtPin))
+
 				if len(ck.WsKey) > 0 {
-					JdCookie{}.Push(fmt.Sprintf("获取到wskey---"))
 					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 					logs.Info(rsp)
@@ -176,7 +176,6 @@ func CookieOK(ck *JdCookie) bool {
 						(&JdCookie{}).Push(fmt.Sprintf("Wskey错误%s", ck.PtPin))
 					} else {
 						ptKey := FetchJdCookieValue("pt_key", rsp)
-						logs.Info(ptKey)
 						ptPin := FetchJdCookieValue("pt_pin", rsp)
 						if len(ptKey) > 0 {
 							ck := JdCookie{
