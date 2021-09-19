@@ -297,12 +297,11 @@ func updateCookie() {
 			logs.Info(pinkey)
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 			if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
-				xyb++
 				logs.Error("wskey错误")
 				(&JdCookie{}).Push(fmt.Sprintf("Wskey错误，%s", ck.PtPin))
 			} else {
-				logs.Info(PtKey)
 				ptKey := FetchJdCookieValue("pt_key", rsp)
+				logs.Info(PtKey)
 				ptPin := FetchJdCookieValue("pt_pin", rsp)
 				if len(ptKey) > 0 {
 					ck := JdCookie{
@@ -318,11 +317,9 @@ func updateCookie() {
 							logs.Info(msg)
 						}
 					} else {
-						xyb++
 						//(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
 					}
 				} else {
-					xyb++
 					msg := fmt.Sprintf("转换失败,pin=%s", ck.PtPin)
 					//sender.Reply(fmt.Sprintf(msg))
 					//(&JdCookie{}).Push(msg)
