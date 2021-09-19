@@ -454,12 +454,12 @@ func GetQlVersion(address string) (string, error) {
 		return "", err
 	}
 	v := ""
-	if strings.Contains(data, "v2.8") {
+	if strings.Contains(data, "v2.9") {
+		v = "2.9"
+	} else if strings.Contains(data, "v2.8") {
 		v = "2.8"
 	} else if strings.Contains(data, "v2.2") {
 		v = "2.2"
-	} else if strings.Contains(data, "v2.9") {
-		v = "2.9"
 	}
 	return v, nil
 }
