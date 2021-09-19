@@ -152,7 +152,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				go func() {
 					Save <- &JdCookie{}
 				}()
-				(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%d个，更新%d个，重复%d个，失败%d个", xya, xyb, xyc, xyd, xye))
+				(&JdCookie{}).Push(fmt.Sprintf("ptkey添加完成，共%d个，新用户%d个，更新%d个，重复%d个，失败%d个", xya, xyb, xyc, xyd, xye))
 				return nil
 			}
 		}
@@ -239,7 +239,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			go func() {
 				Save <- &JdCookie{}
 			}()
-			(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%d个，重复%d个，失败%d个", xya, xyb, xyc, xyd))
+			(&JdCookie{}).Push(fmt.Sprintf("wskey添加完成，共%d个，新用户%d个，重复%d个，失败%d个", xya, xyb, xyc, xyd))
 			return nil
 		}
 		{
