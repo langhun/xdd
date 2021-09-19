@@ -57,14 +57,17 @@ func runTask(task *Task, sender *Sender) string {
 	path := ""
 	if task.Git != "" {
 		path = task.Git + "/" + task.Name
+		logs.Info(path)
 	} else {
 		slice := strings.Split(task.Path, "/")
+		logs.Info(slice)
 		len := len(slice)
 		if len == 0 {
 			logs.Warn("取法识别的文件名")
 			return ""
 		}
 		task.Name = slice[len-1]
+		logs.Info(task.Name)
 		path = ExecPath + "/scripts/" + task.Name
 		logs.Info(fmt.Sprintf("path%s", path))
 		if strings.Contains(task.Path, "http") {
