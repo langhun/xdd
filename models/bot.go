@@ -228,7 +228,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						}
 					} else {
 						xyd++
-						msg := fmt.Sprintf("转换失败%s", ptPin)
+						msg := fmt.Sprintf("转换失败%s", s[1])
 						sender.Reply(fmt.Sprintf(msg))
 						(&JdCookie{}).Push(msg)
 						logs.Info(msg)
