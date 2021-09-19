@@ -179,7 +179,7 @@ var codeSignals = []CodeSignal{
 		},
 	},
 	{
-		Command: []string{"升级", "更新", "update", "upgrade"},
+		Command: []string{"升级", "update", "upgrade"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			if err := Update(sender); err != nil {
