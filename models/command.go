@@ -261,7 +261,9 @@ var codeSignals = []CodeSignal{
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			sender.handleJdCookies(func(ck *JdCookie) {
+				logs.Info(ck.PtPin)
 				if len(ck.WsKey) > 0 {
+					logs.Info(ck.PtPin, ck.WsKey)
 					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 					if len(rsp) > 0 {
