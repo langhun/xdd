@@ -50,27 +50,27 @@ func initVersion() {
 }
 
 func Update(sender *Sender) error {
-	sender.Reply("小弟弟要开始拉取更新代码了😊。")
+	(&JdCookie{}).Push("小弟弟要开始拉取更新代码了😊。")
 	rtn, err := exec.Command("sh", "-c", "cd "+ExecPath+" && git stash && git pull").Output()
 	if err != nil {
 		return errors.New("怎么回事？小弟弟拉取代更新失败了呢😭" + err.Error())
 	}
 	t := string(rtn)
 	if !strings.Contains(t, "changed") {
-		if strings.Contains(t, "Already") || strings.Contains(t, "已经是最新") {
+		if strings.Contains(t, "Already") || strings.Contains(t, "已经是最新👌") {
 			return errors.New("小弟弟已是最新版啦👌")
 		} else {
 			return errors.New("小弟弟拉取代失败😒" + t)
 		}
 	} else {
-		sender.Reply("小弟弟拉取代码成功啦~😋")
+		(&JdCookie{}).Push("小弟弟拉取代码成功啦~😋")
 	}
-	sender.Reply("小弟弟正在努力加工中💪")
+	(&JdCookie{}).Push("小弟弟正在努力加工中💪")
 	rtn, err = exec.Command("sh", "-c", "cd "+ExecPath+" && go build -o "+pname).Output()
 	if err != nil {
 		return errors.New("小弟弟编译失败：" + err.Error())
 	} else {
-		sender.Reply("小弟弟要准备起来了😎")
+		(&JdCookie{}).Push("小弟弟要准备起来了😎")
 	}
 	return nil
 }
