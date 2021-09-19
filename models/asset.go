@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/beego/beego/v2/core/logs"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -70,12 +69,9 @@ func DailyAssetsPush() {
 func (ck *JdCookie) Query1() string {
 	name := "jd_bean_change.js"
 	envs := []Env{{Name: "pins", Value: "&" + ck.PtPin}}
-	logs.Info(fmt.Sprintf("evns%s", envs))
 	msg := runTask(&Task{Path: name, Envs: envs}, &Sender{})
-	logs.Info(fmt.Sprintf("msg%s", msg))
 	if !strings.Contains(msg, "cookies") {
 		msg = regexp.MustCompile(`^(.+\s+){3}|\s*.+\s*$|.*东东工厂.*\s*`).ReplaceAllString(msg, "")
-		logs.Info(fmt.Sprintf("msg1%s", msg))
 		msg = fmt.Sprintf("账号昵称：%s\n绑定QQ: %v\n用户等级：%v\n等级名称：%v\n更新时间: %s\n%s", ck.Nickname, ck.QQ, ck.UserLevel, ck.LevelName, ck.CreateAt, msg)
 	} else if CookieOK(ck) {
 		msg = fmt.Sprintf("查询失败\n账号: %s\n备注: %s\n%s", ck.PtPin, ck.Note, msg)
