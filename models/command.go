@@ -287,16 +287,17 @@ var codeSignals = []CodeSignal{
 							logs.Info(msg)
 						}
 					} else {
-						msg := fmt.Sprintf("转换失败,pin=%s\nwskey失效了？%s", ck.PtPin, rsp)
+						msg := fmt.Sprintf("转换失败,pin=%s\n%s", ck.PtPin, rsp)
 						sender.Reply(fmt.Sprintf(msg))
 						//(&JdCookie{}).Push(msg)
 						logs.Info(msg)
 					}
+				} else {
+					msg := fmt.Sprintf("没找到wskey.%s", ck.PtPin)
+					sender.Reply(fmt.Sprintf(msg))
+					//(&JdCookie{}).Push(msg)
+					logs.Info(msg)
 				}
-				msg := fmt.Sprintf("没找到wskey.%s", ck.PtPin)
-				sender.Reply(fmt.Sprintf(msg))
-				//(&JdCookie{}).Push(msg)
-				logs.Info(msg)
 			})
 			return nil
 		},
