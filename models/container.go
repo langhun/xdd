@@ -125,7 +125,6 @@ func (c *Container) write(cks []JdCookie) error {
 				for _, ck := range cks {
 					if ck.Available == True {
 						hh = append(hh, fmt.Sprintf(`{"name":"JD_COOKIE","value":"pt_key=%s;pt_pin=%s;","remarks":"%s"}`, ck.PtKey, ck.PtPin, ck.Nickname))
-						logs.Info(hh)
 					}
 				}
 				sprintf := fmt.Sprintf(`[%s]`, strings.Join(hh, ","))
