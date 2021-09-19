@@ -33,6 +33,7 @@ type Container struct {
 	Secret    string `yaml:"client_secret"`
 	Path      string
 	Version   string
+	QlVersion string
 	Token     string
 	Available bool
 	Delete    []string
@@ -113,7 +114,7 @@ func initContainer() {
 
 }
 
-func (c *Container) write(cks []JdCookie) error {
+func (c *Container) Write(cks []JdCookie) error {
 	switch c.Type {
 	case "ql":
 		if c.Version == "2.8" || c.Version == "2.9" {
@@ -356,6 +357,7 @@ func (c *Container) getToken(version string) error {
 	if c.Version == "2.9" {
 		req := httplib.Get(c.Address + fmt.Sprintf("/open/auth/token?client_id=%s&client_secret=%s", c.ClientID, c.Secret))
 		req.Header("Content-Type", "application/json;charset=UTF-8")
+		//req.Body(fmt.Sprintf(`{"username":"%s","password":"%s"}`, c.Username, c.Password))
 		if rsp, err := req.Response(); err == nil {
 			data, err := ioutil.ReadAll(rsp.Body)
 			if err != nil {
@@ -452,12 +454,12 @@ func GetQlVersion(address string) (string, error) {
 		return "", err
 	}
 	v := ""
-	if strings.Contains(data, "v2.9") {
-		v = "2.9"
-	} else if strings.Contains(data, "v2.8") {
+	if strings.Contains(data, "v2.8") {
 		v = "2.8"
 	} else if strings.Contains(data, "v2.2") {
 		v = "2.2"
+	} else if strings.Contains(data, "v2.9") {
+		v = "2.9"
 	}
 	return v, nil
 }
