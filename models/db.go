@@ -316,7 +316,7 @@ func updateCookie() {
 						}
 					} else {
 						xyb++
-						(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
+						//(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
 					}
 				} else {
 					xyb++
