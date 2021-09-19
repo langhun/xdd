@@ -12,7 +12,7 @@ import (
 )
 
 var version = "2021091920"
-var describe = "不改了~不改了~~真的不改了。。"
+var describe = "不改了~不改了~~真的不改了..."
 var AppName = "xdd"
 var pname = regexp.MustCompile(`/([^/\s]+)`).FindStringSubmatch(os.Args[0])[1]
 
@@ -63,9 +63,9 @@ func Update(sender *Sender) error {
 			return errors.New("小弟弟拉取代失败😒" + t)
 		}
 	} else {
-		sender.Reply("小弟弟拉取代码成功拉~😋")
+		sender.Reply("小弟弟拉取代码成功啦~😋")
 	}
-	sender.Reply("小弟弟正在努力加工中💪...")
+	sender.Reply("小弟弟正在努力加工中💪")
 	rtn, err = exec.Command("sh", "-c", "cd "+ExecPath+" && go build -o "+pname).Output()
 	if err != nil {
 		return errors.New("小弟弟编译失败：" + err.Error())
