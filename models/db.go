@@ -301,7 +301,7 @@ func updateCookie() {
 				(&JdCookie{}).Push(fmt.Sprintf("Wskey错误，%s", ck.PtPin))
 			} else {
 				ptKey := FetchJdCookieValue("pt_key", rsp)
-				logs.Info(PtKey)
+				logs.Info(ptKey)
 				ptPin := FetchJdCookieValue("pt_pin", rsp)
 				if len(ptKey) > 0 {
 					ck := JdCookie{
