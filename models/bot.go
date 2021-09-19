@@ -158,16 +158,17 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		//wskey
 		ss := regexp.MustCompile(`pin=([^;=\s]+);wskey=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
+		xya := 0
+		xyb := 0
+		xyc := 0
+		xyd := 0
 		if len(ss) > 0 {
 
-			xya := 0
-			xyb := 0
-			xyc := 0
-			xyd := 0
 			for _, s := range ss {
 				xya++
 				pinkey := "pin=" + s[1] + ";wskey=" + s[2] + ";"
 				rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+				logs.Info(rsp)
 				if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
 					logs.Error("wskey错误")
 					sender.Reply(fmt.Sprintf("wskey错误"))
@@ -225,12 +226,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 								logs.Info(msg)
 							}
 						}
+					} else {
+						xyd++
+						msg := fmt.Sprintf("转换失败%s", PtPin)
+						sender.Reply(fmt.Sprintf(msg))
+						(&JdCookie{}).Push(msg)
+						logs.Info(msg)
 					}
-					xyd++
-					msg := fmt.Sprintf("转换失败%s", PtPin)
-					sender.Reply(fmt.Sprintf(msg))
-					(&JdCookie{}).Push(msg)
-					logs.Info(msg)
 				}
 				xyd++
 			}
