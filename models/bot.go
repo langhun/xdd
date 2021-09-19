@@ -152,7 +152,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				go func() {
 					Save <- &JdCookie{}
 				}()
-				(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%s个，更新%s个，重复%s个，失败%s个", xya, xyb, xyc, xyd, xye))
+				(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%d个，更新%d个，重复%d个，失败%d个", xya, xyb, xyc, xyd, xye))
 				return nil
 			}
 		}
@@ -170,6 +170,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
 				logs.Info(rsp)
 				if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
+					xyd++
 					logs.Error("wskey错误")
 					sender.Reply(fmt.Sprintf("wskey错误"))
 				} else {
@@ -234,12 +235,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						logs.Info(msg)
 					}
 				}
-				xyd++
 			}
 			go func() {
 				Save <- &JdCookie{}
 			}()
-			(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%s个，重复%s个，失败%s个", xya, xyb, xyc, xyd))
+			(&JdCookie{}).Push(fmt.Sprintf("添加完成，共%d个，新用户%d个，重复%d个，失败%d个", xya, xyb, xyc, xyd))
 			return nil
 		}
 		{
