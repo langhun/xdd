@@ -28,7 +28,7 @@ func initVersion() {
 	logs.Info("检查更新" + version)
 	value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/langhun/xdd/x/models/version.go").String()
 	if err != nil {
-		logs.Info("更新版本的失败🤣")
+		logs.Info("获取版本失败🤣")
 	} else {
 		// name := AppName + "_" + runtime.GOOS + "_" + runtime.GOARCH
 		if match := regexp.MustCompile(`var version = "(\d{10})"`).FindStringSubmatch(value); len(match) != 0 {
@@ -37,12 +37,12 @@ func initVersion() {
 				describe = des[1]
 			}
 			if match[1] > version {
+				(&JdCookie{}).Push("小弟弟有更新了呢~😍：" + describe)
 				err := Update(&Sender{})
 				if err != nil {
 					logs.Warn("更新失败😭", err)
 					return
 				}
-				(&JdCookie{}).Push("小弟弟有更新了呢~😍：" + describe)
 				Daemon()
 			}
 		}
@@ -53,7 +53,7 @@ func Update(sender *Sender) error {
 	sender.Reply("小弟弟要开始拉取更新代码了😊。")
 	rtn, err := exec.Command("sh", "-c", "cd "+ExecPath+" && git stash && git pull").Output()
 	if err != nil {
-		return errors.New("怎么回事？小弟弟拉取代失败了😭" + err.Error())
+		return errors.New("怎么回事？小弟弟拉取代更新失败了呢😭" + err.Error())
 	}
 	t := string(rtn)
 	if !strings.Contains(t, "changed") {
