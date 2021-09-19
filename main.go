@@ -71,7 +71,7 @@ func main() {
 	web.BConfig.WebConfig.Session.SessionName = models.AppName
 	go func() {
 		time.Sleep(time.Second * 4)
-		(&models.JdCookie{}).Push("小弟弟起来啦~")
+		(&models.JdCookie{}).Push("小弟弟起来了哦~")
 	}()
 	if models.Config.QQID != 0 || models.Config.QQGroupID != 0 {
 		go qbot.Main()
