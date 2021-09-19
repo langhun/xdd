@@ -196,7 +196,7 @@ func CookieOK(ck *JdCookie) bool {
 								logs.Info(msg)
 							}
 						} else {
-							msg := fmt.Sprintf("转换失败,请重新尝试...%s", rsp)
+							msg := fmt.Sprintf("转换失败,请手动更新...%s", rsp)
 							(&JdCookie{}).Push(msg)
 							logs.Info(msg)
 						}
