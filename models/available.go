@@ -200,6 +200,11 @@ func CookieOK(ck *JdCookie) bool {
 							logs.Info(msg)
 						}
 					}
+				} else {
+					ck.Update(Available, False)
+					msg := fmt.Sprintf("没有提交wskey，禁用账号...")
+					(&JdCookie{}).Push(msg)
+					logs.Info(msg)
 				}
 			}
 			return false
