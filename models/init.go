@@ -3,8 +3,6 @@ package models
 import (
 	"os"
 	"path/filepath"
-
-	"github.com/beego/beego/v2/core/logs"
 )
 
 var test2 = func(string) {
@@ -19,7 +17,7 @@ func init() {
 		}
 	}
 	ExecPath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-	logs.Info("当前%s", ExecPath)
+	//logs.Info("当前%s", ExecPath)
 	initConfig()
 	initDB()
 	go initVersion()
@@ -29,7 +27,7 @@ func init() {
 	initCron()
 	go initTgBot()
 	InitReplies()
-	//initTask()
+	initTask()
 	initRepos()
 	initWSPT()
 }
