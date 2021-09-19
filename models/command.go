@@ -263,33 +263,40 @@ var codeSignals = []CodeSignal{
 			sender.handleJdCookies(func(ck *JdCookie) {
 				logs.Info(ck.PtPin)
 				if len(ck.WsKey) > 0 {
-					logs.Info(ck.PtPin, ck.WsKey)
 					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-					logs.Info(pinkey)
 					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
-					logs.Info(rsp)
-					if len(rsp) > 0 {
-						ptKey := FetchJdCookieValue("pt_key", rsp)
-						ptPin := FetchJdCookieValue("pt_pin", rsp)
+					ptKey := FetchJdCookieValue("pt_key", rsp)
+					ptPin := FetchJdCookieValue("pt_pin", rsp)
+					if len(ptKey) > 0 {
 						ck := JdCookie{
 							PtKey: ptKey,
 							PtPin: ptPin,
 						}
-						if nck, err := GetJdCookie(ck.PtPin); err == nil {
-							nck.InPool(ck.PtKey)
-							msg := fmt.Sprintf("更新账号：%s", ck.PtPin)
-							sender.Reply(msg)
-							logs.Info(msg)
+						if CookieOK(&ck) {
+							if nck, err := GetJdCookie(ck.PtPin); err == nil {
+								nck.InPool(ck.PtKey)
+								msg := fmt.Sprintf("更新账号:%s", ck.PtPin)
+								sender.Reply(fmt.Sprintf(msg))
+								//(&JdCookie{}).Push(msg)
+								logs.Info(msg)
+							}
 						} else {
-							sender.Reply(fmt.Sprintf("转换失败：%s", ck.PtPin))
+							msg := fmt.Sprintf("无效ptkey，%s", ck.PtPin)
+							sender.Reply(fmt.Sprintf(msg))
+							//(&JdCookie{}).Push(msg)
+							logs.Info(msg)
 						}
 					} else {
-						sender.Reply(fmt.Sprintf("wskey失效了？%s", ck.Nickname))
+						msg := fmt.Sprintf("转换失败,pin=%s\nwskey失效了？%s", ck.PtPin, rsp)
+						sender.Reply(fmt.Sprintf(msg))
+						//(&JdCookie{}).Push(msg)
+						logs.Info(msg)
 					}
-				} else {
-					sender.Reply(fmt.Sprintf("没找到wskey：%s", ck.Nickname))
 				}
-
+				msg := fmt.Sprintf("没找到wskey.%s", ck.PtPin)
+				sender.Reply(fmt.Sprintf(msg))
+				//(&JdCookie{}).Push(msg)
+				logs.Info(msg)
 			})
 			return nil
 		},

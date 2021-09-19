@@ -228,9 +228,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						}
 					} else {
 						xyd++
-						msg := fmt.Sprintf("转换失败,pin=%s", s[1])
-						//sender.Reply(fmt.Sprintf(msg))
-						(&JdCookie{}).Push(msg)
+						msg := fmt.Sprintf("转换失败,pin=%s\nwskey失效了？%s", ptPin, rsp)
+						sender.Reply(fmt.Sprintf(msg))
+						//(&JdCookie{}).Push(msg)
 						logs.Info(msg)
 					}
 				}
