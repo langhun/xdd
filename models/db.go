@@ -316,7 +316,6 @@ func updateCookie() {
 	for i := range cks {
 		if len(cks[i].WsKey) > 0 {
 			xya++
-			time.Sleep(10 * time.Second)
 			ck := cks[i]
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
@@ -350,6 +349,7 @@ func updateCookie() {
 					(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
 				}
 			}
+			time.Sleep(10 * time.Second)
 		}
 	}
 	(&JdCookie{}).Push(fmt.Sprintf("所有wskey转换完成，共%d个，成功%d个。", xya, xyb))

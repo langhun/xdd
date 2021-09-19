@@ -235,6 +235,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						logs.Info(msg)
 					}
 				}
+				time.Sleep(10 * time.Second)
 			}
 			go func() {
 				Save <- &JdCookie{}
