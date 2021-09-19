@@ -169,12 +169,14 @@ func CookieOK(ck *JdCookie) bool {
 					JdCookie{}.Push(fmt.Sprintf("获取到wskey---"))
 					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+					logs.Info(rsp)
 					JdCookie{}.Push(fmt.Sprintf("自动转换ptkey中---\n%s", rsp))
 					if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
 						logs.Error("wskey错误")
 						(&JdCookie{}).Push(fmt.Sprintf("Wskey错误%s", ck.PtPin))
 					} else {
 						ptKey := FetchJdCookieValue("pt_key", rsp)
+						logs.Info(ptKey)
 						ptPin := FetchJdCookieValue("pt_pin", rsp)
 						if len(ptKey) > 0 {
 							ck := JdCookie{
@@ -194,13 +196,14 @@ func CookieOK(ck *JdCookie) bool {
 								logs.Info(msg)
 							}
 						} else {
-							msg := fmt.Sprintf("转换失败,请重新尝试...pin=%s", ck.PtPin)
+							msg := fmt.Sprintf("转换失败,请重新尝试...%s", rsp)
 							(&JdCookie{}).Push(msg)
 							logs.Info(msg)
 						}
 					}
 				}
 			}
+			ck.Update(Available, false)
 			return false
 		}
 	case "0":
