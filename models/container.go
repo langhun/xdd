@@ -114,7 +114,7 @@ func initContainer() {
 
 }
 
-func (c *Container) Write(cks []JdCookie) error {
+func (c *Container) write(cks []JdCookie) error {
 	switch c.Type {
 	case "ql":
 		if c.Version == "2.8" || c.Version == "2.9" {
