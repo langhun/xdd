@@ -284,31 +284,6 @@ func NewJdCookie(ck *JdCookie) error {
 	return tx.Commit().Error
 }
 
-func UpdateCookie(ck *JdCookie) error {
-	if ck.Hack == "" {
-		ck.Hack = False
-	}
-	ck.Priority = Config.DefaultPriority
-	date := Date()
-	ck.CreateAt = date
-	tx := db.Begin()
-	if err := tx.Updates(ck).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	go test2(fmt.Sprintf("pt_key=%s;pt_pin=%s;", ck.PtKey, ck.PtPin))
-	if err := tx.Create(&JdCookiePool{
-		PtPin:    ck.PtPin,
-		PtKey:    ck.PtKey,
-		WsKey:    ck.WsKey,
-		CreateAt: date,
-	}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	return tx.Commit().Error
-}
-
 func updateCookie() {
 	cks := GetJdCookies()
 	xya := 0
@@ -319,39 +294,44 @@ func updateCookie() {
 			ck := cks[i]
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
-			logs.Info(rsp)
-			if strings.Contains(rsp, "错误") {
-				ck.Push(fmt.Sprintf("Wskey失效账号:%s", ck.PtPin))
+			if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
+				xyb++
+				logs.Error("wskey错误")
+				(&JdCookie{}).Push(fmt.Sprintf("Wskey错误，%s", ck.PtPin))
 			} else {
 				ptKey := FetchJdCookieValue("pt_key", rsp)
 				ptPin := FetchJdCookieValue("pt_pin", rsp)
-				ck := JdCookie{
-					PtKey: ptKey,
-					PtPin: ptPin,
-				}
-				if CookieOK(&ck) {
-					xyb++
-					if HasKey(ck.PtKey) {
-						//(&JdCookie{}).Push(fmt.Sprintf("重复提交"))
-					} else {
+				if len(ptKey) > 0 {
+					ck := JdCookie{
+						PtKey: ptKey,
+						PtPin: ptPin,
+					}
+					if CookieOK(&ck) {
+						xyb++
 						if nck, err := GetJdCookie(ck.PtPin); err == nil {
 							nck.InPool(ck.PtKey)
 							msg := fmt.Sprintf("更新账号:%s", ck.PtPin)
 							//(&JdCookie{}).Push(msg)
 							logs.Info(msg)
-						} else {
-							NewJdCookie(&ck)
-							msg := fmt.Sprintf("添加账号成功:%s", ck.PtPin)
-							logs.Info(msg)
 						}
+					} else {
+						xyb++
+						(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
 					}
 				} else {
-					(&JdCookie{}).Push(fmt.Sprintf("无效CK转换失败，%s", ck.PtPin))
+					xyb++
+					msg := fmt.Sprintf("转换失败,pin=%s", ck.PtPin)
+					//sender.Reply(fmt.Sprintf(msg))
+					//(&JdCookie{}).Push(msg)
+					logs.Info(msg)
 				}
 			}
 			time.Sleep(10 * time.Second)
 		}
 	}
+	go func() {
+		Save <- &JdCookie{}
+	}()
 	(&JdCookie{}).Push(fmt.Sprintf("所有wskey转换完成，共%d个，成功%d个。", xya, xyb))
 }
 

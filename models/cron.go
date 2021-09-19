@@ -29,6 +29,7 @@ func initWSPT() {
 	if Config.WskeyToPtkeyCron != "" {
 		_, err := c.AddFunc(Config.WskeyToPtkeyCron, func() {
 			(&JdCookie{}).Push(fmt.Sprintf("开始定时自动转换wskey..."))
+			logs.Info("开始定时自动转换wskey...")
 			updateCookie()
 		})
 		if err != nil {

@@ -175,7 +175,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					sender.Reply(fmt.Sprintf("wskey错误"))
 				} else {
 					ptKey := FetchJdCookieValue("pt_key", rsp)
-					logs.Info(ptKey)
 					ptPin := FetchJdCookieValue("pt_pin", rsp)
 					if len(ptKey) > 0 {
 						ck := JdCookie{
