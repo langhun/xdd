@@ -211,11 +211,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 						logs.Info(msg)
 					}
 				}
-				go func() {
-					Save <- &JdCookie{}
-				}()
-				return nil
 			}
+			go func() {
+				Save <- &JdCookie{}
+			}()
+			return nil
 		}
 		{
 			o := findShareCode(msg)
