@@ -293,7 +293,11 @@ func updateCookie() {
 			xya++
 			ck := cks[i]
 			var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-			rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+			//rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+			rsp, err := getKey(pinkey)
+			if err != nil {
+				logs.Error(err)
+			}
 			if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
 				logs.Error("wskey错误")
 				(&JdCookie{}).Push(fmt.Sprintf("Wskey错误，%s", ck.PtPin))
