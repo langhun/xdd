@@ -264,7 +264,11 @@ var codeSignals = []CodeSignal{
 				logs.Info(ck.PtPin)
 				if len(ck.WsKey) > 0 {
 					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+					//rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+					rsp, err := getKey(pinkey)
+					if err != nil {
+						logs.Error(err)
+					}
 					ptKey := FetchJdCookieValue("pt_key", rsp)
 					ptPin := FetchJdCookieValue("pt_pin", rsp)
 					if len(ptKey) > 0 {
