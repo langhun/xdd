@@ -167,7 +167,11 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			for _, s := range ss {
 				xya++
 				pinkey := "pin=" + s[1] + ";wskey=" + s[2] + ";"
-				rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+				//rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+				rsp, err := getKey(pinkey)
+				if err != nil {
+					logs.Error(err)
+				}
 				logs.Info(rsp)
 				if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
 					xyd++
