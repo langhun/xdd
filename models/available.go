@@ -173,8 +173,7 @@ func CookieOK(ck *JdCookie) bool {
 					if err != nil {
 						logs.Error(err)
 					}
-					logs.Info(rsp)
-					JdCookie{}.Push(fmt.Sprintf("自动转换ptkey中---\n%s", rsp))
+					JdCookie{}.Push(fmt.Sprintf("自动转换ptkey中---"))
 					if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {
 						logs.Error("wskey错误")
 						(&JdCookie{}).Push(fmt.Sprintf("Wskey错误%s", ck.PtPin))
