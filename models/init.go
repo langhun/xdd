@@ -26,8 +26,8 @@ func init() {
 	initHandle()
 	initCron()
 	go initTgBot()
-	InitReplies()
-	initTask()
+	//InitReplies()
+	//initTask()
 	initRepos()
 	initWSPT()
 }

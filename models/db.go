@@ -335,6 +335,7 @@ func updateCookie() {
 		Save <- &JdCookie{}
 	}()
 	(&JdCookie{}).Push(fmt.Sprintf("所有wskey转换完成，共%d个，成功%d个。", xya, xyb))
+	initHandle()
 }
 
 func CheckIn(pin, key string) int {
