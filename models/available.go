@@ -168,7 +168,11 @@ func CookieOK(ck *JdCookie) bool {
 
 				if len(ck.WsKey) > 0 {
 					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
-					rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+					//rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
+					rsp, err := getKey(pinkey)
+					if err != nil {
+						logs.Error(err)
+					}
 					logs.Info(rsp)
 					JdCookie{}.Push(fmt.Sprintf("自动转换ptkey中---\n%s", rsp))
 					if strings.Contains(rsp, "错误") || strings.Contains(rsp, "失效") {

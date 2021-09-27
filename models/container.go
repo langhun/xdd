@@ -355,7 +355,6 @@ func (c *Container) getToken(version string) error {
 	if c.Version == "2.9" {
 		req := httplib.Get(c.Address + fmt.Sprintf("/open/auth/token?client_id=%s&client_secret=%s", c.ClientID, c.Secret))
 		req.Header("Content-Type", "application/json;charset=UTF-8")
-		//req.Body(fmt.Sprintf(`{"username":"%s","password":"%s"}`, c.Username, c.Password))
 		if rsp, err := req.Response(); err == nil {
 			data, err := ioutil.ReadAll(rsp.Body)
 			if err != nil {
