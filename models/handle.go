@@ -15,10 +15,7 @@ func initHandle() {
 	//获取路径
 	Save = make(chan *JdCookie)
 	go func() {
-		logs.Info("q")
 		init := true
-		logs.Info(init)
-		logs.Info("2")
 		for {
 			get := <-Save
 			logs.Info(get.Pool)
@@ -26,7 +23,6 @@ func initHandle() {
 				initCookie()
 				continue
 			}
-			logs.Info("7")
 			cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
 				return sb.Where(fmt.Sprintf("%s >= ? and %s != ?", Priority, Hack), 0, True)
 			})
@@ -177,21 +173,16 @@ module.exports = cookies`, cookies))
 			}
 			if init {
 				go func() {
-					logs.Info("3")
 					for {
-						logs.Info("4")
 						Save <- &JdCookie{
 							Pool: "s",
 						}
 
-						logs.Info("5")
 						time.Sleep(time.Minute * 30)
 						// time.Sleep(time.Second * 1)
 					}
 				}()
-				logs.Info("6")
 				init = false
-				logs.Info(init)
 			}
 		}
 	}()

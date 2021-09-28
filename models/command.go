@@ -261,7 +261,6 @@ var codeSignals = []CodeSignal{
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {
 			sender.handleJdCookies(func(ck *JdCookie) {
-				logs.Info(ck.PtPin)
 				if len(ck.WsKey) > 0 {
 					var pinkey = fmt.Sprintf("pin=%s;wskey=%s;", ck.PtPin, ck.WsKey)
 					//rsp := cmd(fmt.Sprintf(`python3 wspt.py "%s"`, pinkey), &Sender{})
@@ -316,19 +315,7 @@ var codeSignals = []CodeSignal{
 			return nil
 		},
 	},
-	{
-		Command: []string{"检测"},
-		Admin:   true,
-		Handle: func(sender *Sender) interface{} {
-			sender.Reply("测试检测")
-			logs.Info("测试检测")
-			Save <- &JdCookie{
-				Pool: "s",
-			}
-			initHandle()
-			return nil
-		},
-	},
+
 	{
 		Command: []string{"删除", "clean"},
 		Admin:   true,
