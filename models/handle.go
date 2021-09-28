@@ -21,10 +21,12 @@ func initHandle() {
 		logs.Info("2")
 		for {
 			get := <-Save
+			logs.Info(get.Pool)
 			if get.Pool == "s" {
 				initCookie()
 				continue
 			}
+			logs.Info("7")
 			cks := GetJdCookies(func(sb *gorm.DB) *gorm.DB {
 				return sb.Where(fmt.Sprintf("%s >= ? and %s != ?", Priority, Hack), 0, True)
 			})
