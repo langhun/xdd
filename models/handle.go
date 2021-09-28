@@ -181,7 +181,7 @@ module.exports = cookies`, cookies))
 						// time.Sleep(time.Second * 1)
 					}
 				}()
-				init = false
+				//init = false
 			}
 		}
 	}()
