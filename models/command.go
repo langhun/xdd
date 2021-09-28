@@ -317,6 +317,16 @@ var codeSignals = []CodeSignal{
 		},
 	},
 	{
+		Command: []string{"检测"},
+		Admin:   true,
+		Handle: func(sender *Sender) interface{} {
+			sender.Reply("测试检测")
+			logs.Info("测试检测")
+			initHandle()
+			return nil
+		},
+	},
+	{
 		Command: []string{"删除", "clean"},
 		Admin:   true,
 		Handle: func(sender *Sender) interface{} {

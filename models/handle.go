@@ -77,15 +77,12 @@ module.exports = cookies`, cookies))
 			// cks = tmp
 			if Config.Mode == Parallel {
 				for i := range Config.Containers {
-					logs.Info("123")
 					(&Config.Containers[i]).read()
 				}
 				for i := range Config.Containers {
-					logs.Info("456")
 					(&Config.Containers[i]).write(cks)
 				}
 			} else {
-				logs.Info("789")
 				resident := []JdCookie{}
 				if Config.Resident != "" {
 					tmp := cks
