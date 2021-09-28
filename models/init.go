@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/beego/beego/v2/core/logs"
 	"os"
 	"path/filepath"
 )
@@ -17,7 +18,7 @@ func init() {
 		}
 	}
 	ExecPath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-	//logs.Info("当前%s", ExecPath)
+	logs.Info("当前%s", ExecPath)
 	initConfig()
 	initDB()
 	go initVersion()
@@ -26,7 +27,7 @@ func init() {
 	initHandle()
 	initCron()
 	go initTgBot()
-	//InitReplies()
+	InitReplies()
 	//initTask()
 	initRepos()
 	initWSPT()
