@@ -322,6 +322,8 @@ var codeSignals = []CodeSignal{
 		Handle: func(sender *Sender) interface{} {
 			sender.Reply("测试检测")
 			logs.Info("测试检测")
+			get := <-Save
+			get.Pool = "s"
 			initHandle()
 			return nil
 		},
