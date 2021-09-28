@@ -15,7 +15,10 @@ func initHandle() {
 	//获取路径
 	Save = make(chan *JdCookie)
 	go func() {
+		logs.Info("q")
 		init := true
+		logs.Info(init)
+		logs.Info("2")
 		for {
 			get := <-Save
 			if get.Pool == "s" {
@@ -172,16 +175,21 @@ module.exports = cookies`, cookies))
 			}
 			if init {
 				go func() {
+					logs.Info("3")
 					for {
+						logs.Info("4")
 						Save <- &JdCookie{
 							Pool: "s",
 						}
 
+						logs.Info("5")
 						time.Sleep(time.Minute * 30)
 						// time.Sleep(time.Second * 1)
 					}
 				}()
-				//init = false
+				logs.Info("6")
+				init = false
+				logs.Info(init)
 			}
 		}
 	}()
