@@ -67,7 +67,7 @@ func DailyAssetsPush() {
 }
 
 func (ck *JdCookie) Query1() string {
-	name := "jd_bean_change_new.js"
+	name := "jd_bean_change.js"
 	envs := []Env{{Name: "pins", Value: "&" + ck.PtPin}}
 	msg := runTask(&Task{Path: name, Envs: envs}, &Sender{})
 	//log.Info(msg)
