@@ -70,7 +70,7 @@ func (ck *JdCookie) Query1() string {
 	name := "jd_bean_change.js"
 	envs := []Env{{Name: "pins", Value: "&" + ck.PtPin}}
 	msg := runTask(&Task{Path: name, Envs: envs}, &Sender{})
-	//log.Info(msg)
+	log.Info(msg)
 	if !strings.Contains(msg, "cookies") {
 		msg = regexp.MustCompile(`^(.+\s+){10}|\s*.+\s*$|.*东东工厂.*\s*`).ReplaceAllString(msg, "")
 		msg = fmt.Sprintf("账号昵称：%s\n绑定QQ: %v\n用户等级：%v\n等级名称：%v\n更新时间: %s\n%s", ck.Nickname, ck.QQ, ck.UserLevel, ck.LevelName, ck.CreateAt, msg)
