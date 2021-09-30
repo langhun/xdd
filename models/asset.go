@@ -72,8 +72,8 @@ func (ck *JdCookie) Query1() string {
 	msg := runTask(&Task{Path: name, Envs: envs}, &Sender{})
 	//logs.Info(msg)
 	if !strings.Contains(msg, "cookies") {
-		msg = regexp.MustCompile(`^(.+\s+){0}|\s*.+\s*$|.*红包.*\s*`).ReplaceAllString(msg, "")
-		msg = fmt.Sprintf("账号昵称：%s\n绑定QQ: %v\n用户等级：%v\n等级名称：%v\n更新时间: %s\n%s", ck.Nickname, ck.QQ, ck.UserLevel, ck.LevelName, ck.CreateAt, msg)
+		msg = regexp.MustCompile(`^(.+\s+){0}|\s*.+\s*$\s*`).ReplaceAllString(msg, "")
+		msg = fmt.Sprintf(" 账号昵称：%s\n 绑定QQ: %v\n 用户等级：%v\n 等级名称：%v\n 更新时间: %s\n%s", ck.Nickname, ck.QQ, ck.UserLevel, ck.LevelName, ck.CreateAt, msg)
 	} else if CookieOK(ck) {
 		msg = fmt.Sprintf("查询失败\n账号: %s\n备注: %s\n%s", ck.PtPin, ck.Note, msg)
 	} else {
