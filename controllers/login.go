@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -347,107 +348,79 @@ func (c *LoginController) Cookie() {
 		}
 	}
 }
+
 func (c *LoginController) SMSLogin() {
-	token := c.GetString("token")
 	cookie := c.GetString("ck")
-	//key := c.GetString("key")
-	//qq, _ := c.GetInt("qq")
-	//bz := c.GetString("bz")
-	//push := c.GetString("push")
+	qq := c.GetString("qq")
 	logs.Info(cookie)
 	(&models.JdCookie{}).Push(cookie)
-	//logs.Info(key)
 
-	if token == models.Config.ApiToken {
-		result := Result{
-			Data:    "null",
-			Code:    200,
-			Message: "添加成功",
-		}
-		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
-		if errs != nil {
-			fmt.Println(errs.Error())
-		}
-		c.Ctx.WriteString(string(jsons))
+	ptKey := FetchJdCookieValue("pt_key", cookie)
+	ptPin := FetchJdCookieValue("pt_pin", cookie)
+	ck := &models.JdCookie{
+		PtKey: ptKey,
+		PtPin: ptPin,
+		Hack:  models.False,
+		QQ:    0,
+	}
+	if qq != "" {
+		ck.QQ, _ = strconv.Atoi(qq)
+	}
+	if ptKey != "" && ptPin != "" {
+		if models.CookieOK(ck) {
+			if !models.HasPin(ptPin) {
+				models.NewJdCookie(ck)
+				ck.Query()
+				msg := fmt.Sprintf("来自短信的添加,账号：%s,QQ: %s", ck.PtPin, qq)
+				(&models.JdCookie{}).Push(msg)
+			} else {
+				ck, _ := models.GetJdCookie(ptPin)
+				ck.InPool(ptKey)
+				if qq != "" {
+					ck.Update(models.QQ, qq)
+				}
+				msg := fmt.Sprintf("来自短信的更新,账号：%s", ck.PtPin)
+				(&models.JdCookie{}).Push(msg)
+			}
 
+			result := Result{
+				Data:    "null",
+				Code:    200,
+				Message: "添加成功",
+			}
+			jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+			if errs != nil {
+				fmt.Println(errs.Error())
+			}
+			c.Ctx.WriteString(string(jsons))
+
+		} else {
+			result := Result{
+				Data:    "null",
+				Code:    300,
+				Message: "CK过期",
+			}
+			jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+			if errs != nil {
+				fmt.Println(errs.Error())
+			}
+			msg := fmt.Sprintf("传入过期CK，请小心攻击，账号：%s", ck.PtPin)
+			(&models.JdCookie{}).Push(msg)
+			c.Ctx.WriteString(string(jsons))
+		}
 	} else {
 		result := Result{
 			Data:    "null",
 			Code:    300,
-			Message: "Token错误",
+			Message: "CK错误",
 		}
 		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
 		if errs != nil {
 			fmt.Println(errs.Error())
 		}
+		msg := fmt.Sprintf("传入错误CK，请小心攻击，账号：%s", ck.PtPin)
+		(&models.JdCookie{}).Push(msg)
 		c.Ctx.WriteString(string(jsons))
-
 	}
-
-	//if key != "" && pin != "" {
-	//	//ptKey := FetchJdCookieValue("pt_key", cookies)
-	//	//ptPin := FetchJdCookieValue("pt_pin", cookies)
-	//	ck := &models.JdCookie{
-	//		PtKey:    key,
-	//		PtPin:    pin,
-	//		Hack:     models.False,
-	//		QQ:       qq,
-	//		Note:     bz,
-	//		PushPlus: push,
-	//	}
-	//	if key != "" && pin != "" {
-	//		if models.CookieOK(ck) {
-	//			query := ck.Query()
-	//			result := Result{
-	//				Data: query,
-	//				Code: 0,
-	//			}
-	//
-	//			if !models.HasPin(pin) {
-	//				models.NewJdCookie(ck)
-	//				result.Message = fmt.Sprintf("添加成功")
-	//				result.Data = ck.Query()
-	//				jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
-	//				if errs != nil {
-	//					fmt.Println(errs.Error())
-	//				}
-	//				c.Ctx.Redirect(200, "/userCenter")
-	//				c.Ctx.WriteString(string(jsons))
-	//			} else if !models.HasKey(key) {
-	//				ck, _ := models.GetJdCookie(pin)
-	//				ck.InPool(key)
-	//				result.Message = fmt.Sprintf("更新成功")
-	//				result.Data = ck.Query()
-	//				jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
-	//				if errs != nil {
-	//					fmt.Println(errs.Error())
-	//				}
-	//				c.Ctx.WriteString(string(jsons))
-	//			}
-	//		} else {
-	//			result := Result{
-	//				Data:    "null",
-	//				Code:    1,
-	//				Message: "CK过期",
-	//			}
-	//			jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
-	//			if errs != nil {
-	//				fmt.Println(errs.Error())
-	//			}
-	//			c.Ctx.WriteString(string(jsons))
-	//		}
-	//	}
-	//} else {
-	//	result := Result{
-	//		Data:    "null",
-	//		Code:    2,
-	//		Message: "ck格式错误",
-	//	}
-	//	jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
-	//	if errs != nil {
-	//		fmt.Println(errs.Error())
-	//	}
-	//	c.Ctx.WriteString(string(jsons))
-	//}
 
 }
