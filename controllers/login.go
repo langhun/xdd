@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/langhun/xdd/models"
 	"io/ioutil"
 	"regexp"
 	"strconv"
@@ -12,7 +13,6 @@ import (
 	"time"
 
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/langhun/xdd/models"
 
 	"github.com/beego/beego/v2/client/httplib"
 	qrcode "github.com/skip2/go-qrcode"
@@ -36,6 +36,11 @@ type StepThree struct {
 	Message string `json:"message"`
 }
 
+type StepThree1 struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
 type Result struct {
 	Code    int         `json:"code"`
 	Data    interface{} `json:"data"`
@@ -44,6 +49,38 @@ type Result struct {
 
 var JdCookieRunners sync.Map
 var jdua = models.GetUserAgent
+
+func (c *LoginController) GetUserInfo() {
+
+	pin := c.GetString("pin")
+	logs.Info(pin)
+	logs.Info("进入方法")
+	cookie, err := models.GetJdCookie(pin)
+	if err != nil {
+		logs.Error(err)
+		result := Result{
+			Data:    "null",
+			Code:    1,
+			Message: "查无匹配的pin",
+		}
+		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+		if errs != nil {
+			fmt.Println(errs.Error())
+		}
+		c.Ctx.WriteString(string(jsons))
+	} else {
+		result := Result{
+			Data:    cookie.Query(),
+			Code:    0,
+			Message: "查询成功",
+		}
+		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+		if errs != nil {
+			fmt.Println(errs.Error())
+		}
+		c.Ctx.WriteString(string(jsons))
+	}
+}
 
 func (c *LoginController) GetQrcode() {
 	if v := c.GetSession("jd_token"); v != nil {
@@ -264,12 +301,12 @@ func CheckLogin(token, cookie, okl_token string) (string, *models.JdCookie) {
 		return "", nil //err.Error()
 	}
 	data, err := ioutil.ReadAll(rsp.Body)
-	sth := StepThree{}
+	sth := StepThree1{}
 	err = json.Unmarshal(data, &sth)
 	if err != nil {
 		return "", nil //err.Error()
 	}
-	switch sth.Errcode {
+	switch sth.Code {
 	case 0:
 		cookies := strings.Join(rsp.Header.Values("Set-Cookie"), " ")
 		pt_key := FetchJdCookieValue("pt_key", cookies)
@@ -302,19 +339,19 @@ func CheckLogin(token, cookie, okl_token string) (string, *models.JdCookie) {
 		}()
 		JdCookieRunners.Store(token, []interface{}{pt_pin})
 		return "成功", &ck
-	case 19: //Token无效，请退出重试
+	case 500: //Token无效，请退出重试
 		JdCookieRunners.Delete(token)
 		return sth.Message, nil
-	case 21: //Token不存在，请退出重试
-		JdCookieRunners.Delete(token)
-		return sth.Message, nil
-	case 176: //授权登录未确认
-		return sth.Message, nil
-	case 258: //务异常，请稍后重试
-		return "", nil
-	case 264: //出错了，请退出重试
-		// JdCookieRunners.Delete(token)
-		// return sth.Message, nil
+	//case 21: //Token不存在，请退出重试
+	//	JdCookieRunners.Delete(token)
+	//	return sth.Message, nil
+	//case 176: //授权登录未确认
+	//	return sth.Message, nil
+	//case 258: //务异常，请稍后重试
+	//	return "", nil
+	//case 264: //出错了，请退出重试
+	//	// JdCookieRunners.Delete(token)
+	//	// return sth.Message, nil
 	default:
 		JdCookieRunners.Delete(token)
 		// fmt.Println(sth)
@@ -331,22 +368,98 @@ func FetchJdCookieValue(key string, cookies string) string {
 	}
 }
 
-func (c *LoginController) Cookie() {
-	cookies := c.Ctx.Input.Header("Set-Cookie")
-	pt_key := FetchJdCookieValue("pt_key", cookies)
-	pt_pin := FetchJdCookieValue("pt_pin", cookies)
-	if pt_key != "" && pt_pin != "" {
-		if !models.HasPin(pt_pin) {
-			models.NewJdCookie(&models.JdCookie{
-				PtKey: pt_key,
-				PtPin: pt_pin,
-				Hack:  models.True,
-			})
-		} else if !models.HasKey(pt_key) {
-			ck, _ := models.GetJdCookie(pt_pin)
-			ck.InPool(pt_key)
+func (c *LoginController) IsAdmin() {
+	pin := c.GetString("pin")
+	if pin == "" {
+		c.Ctx.Redirect(302, "/")
+		c.StopRun()
+	} else {
+		if strings.EqualFold(models.Config.Master, pin) {
+			c.SetSession("pin", pin)
+			c.Ctx.WriteString("登录")
 		}
 	}
+}
+
+func (c *LoginController) CkLogin() {
+	pin := c.GetString("pin")
+	key := c.GetString("key")
+	qq, _ := c.GetInt("qq")
+	bz := c.GetString("bz")
+	push := c.GetString("push")
+
+	//c.Ctx.WriteString("添加成功")
+	if key != "" && pin != "" {
+		//ptKey := FetchJdCookieValue("pt_key", cookies)
+		//ptPin := FetchJdCookieValue("pt_pin", cookies)
+		ck := &models.JdCookie{
+			PtKey:    key,
+			PtPin:    pin,
+			Hack:     models.False,
+			QQ:       qq,
+			Note:     bz,
+			PushPlus: push,
+		}
+		if key != "" && pin != "" {
+			if models.CookieOK(ck) {
+				query := ck.Query()
+				result := Result{
+					Data: query,
+					Code: 0,
+				}
+
+				if !models.HasPin(pin) {
+					models.NewJdCookie(ck)
+					result.Message = fmt.Sprintf("添加成功")
+					//result.Data = ck.Query()
+					jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+					if errs != nil {
+						fmt.Println(errs.Error())
+					}
+					c.Ctx.WriteString(string(jsons))
+				} else if !models.HasKey(key) {
+					ck, _ := models.GetJdCookie(pin)
+					ck.InPool(key)
+					result.Message = fmt.Sprintf("更新成功")
+					//result.Data = ck.Query()
+					jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+					if errs != nil {
+						fmt.Println(errs.Error())
+					}
+					c.Ctx.WriteString(string(jsons))
+				}
+				result.Message = "登录成功"
+				jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+				if errs != nil {
+					fmt.Println(errs.Error())
+				}
+				c.Ctx.WriteString(string(jsons))
+			} else {
+				result := Result{
+					Data:    "null",
+					Code:    1,
+					Message: "CK过期",
+				}
+				jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+				if errs != nil {
+					fmt.Println(errs.Error())
+				}
+				c.Ctx.WriteString(string(jsons))
+			}
+		}
+	} else {
+		result := Result{
+			Data:    "null",
+			Code:    2,
+			Message: "ck格式错误",
+		}
+		jsons, errs := json.Marshal(result) //转换成JSON返回的是byte[]
+		if errs != nil {
+			fmt.Println(errs.Error())
+		}
+		c.Ctx.WriteString(string(jsons))
+	}
+
 }
 
 func (c *LoginController) SMSLogin() {
@@ -423,4 +536,22 @@ func (c *LoginController) SMSLogin() {
 		c.Ctx.WriteString(string(jsons))
 	}
 
+}
+
+func (c *LoginController) Cookie() {
+	cookies := c.Ctx.Input.Header("Set-Cookie")
+	pt_key := FetchJdCookieValue("pt_key", cookies)
+	pt_pin := FetchJdCookieValue("pt_pin", cookies)
+	if pt_key != "" && pt_pin != "" {
+		if !models.HasPin(pt_pin) {
+			models.NewJdCookie(&models.JdCookie{
+				PtKey: pt_key,
+				PtPin: pt_pin,
+				Hack:  models.True,
+			})
+		} else if !models.HasKey(pt_key) {
+			ck, _ := models.GetJdCookie(pt_pin)
+			ck.InPool(pt_key)
+		}
+	}
 }

@@ -214,7 +214,6 @@ var codeSignals = []CodeSignal{
 			if _, ok := codes[id]; ok {
 				return "你已在登录中。"
 			}
-			s.Reply("你要登上敌方的陆地？")
 			s.Reply("请输入手机号___________")
 			return nil
 		},
