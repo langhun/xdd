@@ -38,12 +38,13 @@ func initVersion() {
 			}
 			if match[1] > version {
 				(&JdCookie{}).Push("小弟弟有更新了呢~😍：" + describe)
-				err := Update(&Sender{})
-				if err != nil {
-					logs.Warn("更新失败😭", err)
-					return
-				}
-				Daemon()
+				(&JdCookie{}).Push("回复 升级 赶紧更新吧。😍")
+				//err := Update(&Sender{})
+				//if err != nil {
+				//	logs.Warn("更新失败😭", err)
+				//	return
+				//}
+				//Daemon()
 			}
 		}
 	}
