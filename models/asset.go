@@ -56,7 +56,7 @@ var Float64 = func(s string) float64 {
 func DailyAssetsPush() {
 	for _, ck := range GetJdCookies() {
 		if (ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil) || ck.PushPlus != "" {
-			msg := ck.Query1()
+			msg := ck.Query()
 			if ck.QQ != 0 && Config.QQID != 0 && SendQQ != nil {
 				SendQQ(int64(ck.QQ), msg)
 			}
