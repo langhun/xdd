@@ -32,8 +32,8 @@ type Yaml struct {
 	DailyAssetPushCron  string `yaml:"daily_asset_push_cron"`
 	WskeyToPtkeyCron    string `yaml:"wskey_to_ptkey_cron"`
 	Version             string `yaml:"version"`
-	SmsToken            string `yaml:"SMSToken"`
-	SMSAddress          string `yaml:"SMSAddress"`
+	SmsToken            string `yaml:"SMS_Token"`
+	SMSAddress          string `yaml:"SMS_Address"`
 	Node                string
 	Npm                 string
 	Python              string

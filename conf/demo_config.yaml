@@ -69,8 +69,11 @@ no_ghproxy: true
 #日常资产推送时间
 daily_asset_push_cron:
 
+#短信地址
+SMS_Address:
+
 #短信接口Token
-SMSToken:
+SMS_Token:
 
 #wskey定时转换时间
 wskey_to_ptkey_cron:
