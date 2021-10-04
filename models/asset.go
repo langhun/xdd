@@ -71,12 +71,12 @@ func (ck *JdCookie) Query1() string {
 	name := "jd_bean_change.js"
 	envs := []Env{{Name: "pins", Value: "&" + ck.PtPin}}
 	msg := runTask(&Task{Path: name, Envs: envs}, &Sender{})
-	logs.Info(msg)
+	logs.Info(fmt.Sprintf("1\n %s", msg))
 	if !strings.Contains(msg, "cookies") {
 		msg = regexp.MustCompile(`^(.+\s+){0}|\s*.+\s*$\s*`).ReplaceAllString(msg, "")
-		logs.Info(msg)
+		logs.Info(fmt.Sprintf("2\n %s", msg))
 		msg = fmt.Sprintf("【账号昵称】%s\n【绑定  QQ】%v\n【用户等级】%v\n【更新时间】%s\n%s", ck.Nickname, ck.QQ, ck.UserLevel, ck.CreateAt, msg)
-		logs.Info(msg)
+		logs.Info(fmt.Sprintf("3\n %s", msg))
 	} else if CookieOK(ck) {
 		msg = fmt.Sprintf("查询失败\n账号: %s\n备注: %s\n%s", ck.PtPin, ck.Note, msg)
 	} else {
