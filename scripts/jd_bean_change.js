@@ -47,7 +47,7 @@ let IndexGp4 = 0;
 let notifySkipList = "";
 let IndexAll = 0;
 let EnableMonth = "false";
-let isSignError=false;
+let isSignError = false;
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [], cookie = '';
 const JD_API_HOST = 'https://api.m.jd.com/client.action';
@@ -150,6 +150,7 @@ if ($.isNode()) {
 
             $.allincomeBean = 0; //月收入
             $.allexpenseBean = 0; //月支出
+            $.joylevel = 0;
 
             console.log(`******开始查询【京东账号${$.index}】${$.nickName || $.UserName}*********`);
 
@@ -166,6 +167,7 @@ if ($.isNode()) {
                 }
                 continue
             }
+            await getJoyBaseInfo();
             await getJdZZ();
             await getMs();
             await jdfruitRequest('taskInitForFarm', {
@@ -191,6 +193,7 @@ if ($.isNode()) {
             if (DisableCash == "false") {
                 await jdCash();
             }
+
             await showMsg();
 
             if (intPerSent > 0) {
@@ -298,7 +301,6 @@ if ($.isNode()) {
             })
             await $.wait(10 * 1000);
         }
-
 
         if ($.isNode() && allMessageMonthGp2) {
             await notify.sendNotify(`京东月资产变动#2`, `${allMessageMonthGp2}`, {
@@ -477,8 +479,24 @@ async function showMsg() {
     if ($.JdMsScore != 0) {
         ReturnMessage += `【京东秒杀】${$.JdMsScore}币(≈${($.JdMsScore / 1000).toFixed(2)}元)\n`;
     }
-    if ($.jdCash != 0) {
-        ReturnMessage += `【 领现金 】${$.jdCash}元\n`;
+
+    if ($.joylevel || $.jdCash) {
+        ReturnMessage += `【其他信息】`;
+        if ($.joylevel) {
+            ReturnMessage += `汪汪:${$.joylevel}级`;
+            if ($.joylevel >= 30) {
+                allReceiveMessage += `【账号${IndexAll} ${$.nickName || $.UserName}】汪汪满级可领取宝箱啦 (汪汪乐园)\n`;
+            }
+            if ($.jdCash) {
+                ReturnMessage += ",";
+            }
+        }
+        if ($.jdCash) {
+            ReturnMessage += `领现金:${$.jdCash}元`;
+        }
+
+        ReturnMessage += `\n`;
+
     }
 
     if ($.JdFarmProdName != "") {
@@ -794,18 +812,18 @@ async function jdCash() {
     let body = "%7B%7D"
     let uuid = randomString(16)
     console.log(`正在获取领现金任务签名...`);
-    isSignError=false;
+    isSignError = false;
     let sign = await getSign(functionId, decodeURIComponent(body), uuid)
     if (isSignError) {
         console.log(`领现金任务签名获取失败,等待10秒后再次尝试...`)
         await $.wait(10 * 1000);
-        isSignError=false;
+        isSignError = false;
         sign = await getSign(functionId, decodeURIComponent(body), uuid);
     }
     if (isSignError) {
         console.log(`领现金任务签名获取失败,等待10秒后再次尝试...`)
         await $.wait(10 * 1000);
-        isSignError=false;
+        isSignError = false;
         sign = await getSign(functionId, decodeURIComponent(body), uuid);
     }
     if (!isSignError) {
@@ -880,7 +898,7 @@ function getSign(functionid, body, uuid) {
             try {
                 if (err) {
                     console.log(`${JSON.stringify(err)}`);
-                    isSignError=true;
+                    isSignError = true;
                     //console.log(`${$.name} getSign API请求失败，请检查网路重试`)
                 } else {}
             } catch (e) {
@@ -1696,6 +1714,42 @@ function ddFactoryTaskUrl(function_id, body = {}, function_id2) {
     }
 }
 
+async function getJoyBaseInfo(taskId = '', inviteType = '', inviterPin = '') {
+    return new Promise(resolve => {
+        $.post(taskPostClientActionUrl(`body={"taskId":"${taskId}","inviteType":"${inviteType}","inviterPin":"${inviterPin}","linkId":"LsQNxL7iWDlXUs6cFl-AAg"}&appid=activities_platform`), async(err, resp, data) => {
+            try {
+                if (err) {
+                    console.log(`${JSON.stringify(err)}`)
+                    console.log(`汪汪乐园 API请求失败，请检查网路重试`)
+                } else {
+                    data = JSON.parse(data);
+                    if (data.success) {
+                        $.joylevel = data.data.level;
+                    }
+                }
+            } catch (e) {
+                $.logErr(e, resp)
+            }
+            finally {
+                resolve();
+            }
+        })
+    })
+}
+function taskPostClientActionUrl(body) {
+    return {
+        url: `https://api.m.jd.com/client.action?functionId=joyBaseInfo`,
+        body: body,
+        headers: {
+            'User-Agent': $.user_agent,
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Host': 'api.m.jd.com',
+            'Origin': 'https://joypark.jd.com',
+            'Referer': 'https://joypark.jd.com/?activityId=LsQNxL7iWDlXUs6cFl-AAg&lng=113.387899&lat=22.512678&sid=4d76080a9da10fbb31f5cd43396ed6cw&un_area=19_1657_52093_0',
+            'Cookie': cookie,
+        }
+    }
+}
 function randomString(e) {
     e = e || 32;
     let t = "0123456789abcdef",
